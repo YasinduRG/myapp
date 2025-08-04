@@ -79,6 +79,10 @@ class MainMenuScreen extends ConsumerWidget  {
                         _showLogoutConfirmationDialog(context,ref);
                       },
                     ),
+                  _MenuCard(icon: Icons.alarm, label: 'Test', onTap: () {
+
+                    Navigator.pushNamed(context, AppRoutes.testNotify);
+                  }),
                   ],
                 ),
               ),

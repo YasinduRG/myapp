@@ -37,7 +37,7 @@ dependencies:
   permission_handler: ^11.3.1 # To handle runtime permissions easily
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
-
+  flutter_local_notifications: ^19.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

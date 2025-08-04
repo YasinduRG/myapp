@@ -9,7 +9,9 @@ import 'package:myapp/screens/invoice/invoice_screen.dart';
 import 'package:myapp/screens/print_invoice/print_invoice_screen.dart';
 //import 'package:myapp/services/notification_service.dart';
 //import 'package:provider/provider.dart'; replaced with river pod
-import 'package:myapp/providers/auth_provider.dart'; 
+import 'package:myapp/providers/auth_provider.dart';
+import 'package:myapp/screens/test_notify/test_notify.dart';
+import 'package:myapp/services/notification_services.dart'; 
 
 // Import our new notification service
 //import 'package:myapp/services/notification_service.dart'; ENABLE THIS LATER FIBASE CLOUD NOTIFICATION
@@ -17,6 +19,7 @@ import 'package:myapp/providers/auth_provider.dart';
 Future<void> main() async {
   // Ensure that Flutter bindings are initialized before calling native code
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.initialize();
 
   // Initialize our notification service.
   // This will handle Firebase setup and topic subscription.
@@ -81,6 +84,8 @@ class MyApp extends ConsumerWidget {
         AppRoutes.invoice: (context) => const InvoiceScreen(),
         AppRoutes.printInvoice: (context) => const PrintInvoiceScreen(),
         AppRoutes.profile: (context) => const ProfileScreen(),
+        AppRoutes.testNotify: (context) => const TestPage(),
+
         // Example for a future screen:
         // AppRoutes.invoice: (context) => const InvoiceScreen(),
       },
