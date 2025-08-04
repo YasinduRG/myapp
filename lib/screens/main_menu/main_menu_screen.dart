@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/providers/auth_provider.dart';
+//import 'package:myapp/providers/auth_provider_old.dart';
 import 'package:myapp/theme/app_theme.dart'; // Import theme
 import 'package:myapp/widgets/app_footer.dart'; // Import footer
 import 'package:myapp/app_routes.dart';
-import 'package:provider/provider.dart';   
+//import 'package:provider/provider.dart';   
 
-class MainMenuScreen extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // 1. Import Riverpod
+import 'package:myapp/providers/auth_provider.dart';      // 2. Import the new Riverpod provider
+
+class MainMenuScreen extends ConsumerWidget  {
   const MainMenuScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -73,7 +76,7 @@ class MainMenuScreen extends StatelessWidget {
                       icon: Icons.logout,
                       label: 'Logout',
                       onTap: () {
-                        _showLogoutConfirmationDialog(context);
+                        _showLogoutConfirmationDialog(context,ref);
                       },
                     ),
                   ],
@@ -91,7 +94,7 @@ class MainMenuScreen extends StatelessWidget {
 }
 
 
-  void _showLogoutConfirmationDialog(BuildContext context) {
+  void _showLogoutConfirmationDialog(BuildContext context,WidgetRef ref) {
     showDialog(
       context: context,
       barrierDismissible: false, // User must tap a button to dismiss
@@ -125,7 +128,8 @@ class MainMenuScreen extends StatelessWidget {
                   onPressed: () {
                     // Dismiss the dialog first
                     Navigator.of(dialogContext).pop();
-                    Provider.of<AuthProvider>(context, listen: false).logout();
+                    ref.read(authProvider.notifier).logout();
+                    //Provider.of<AuthProvider>(context, listen: false).logout();
                     // Then navigate to the login screen
                     //Navigator.of(context).pushReplacementNamed(AppRoutes.login);
                   },

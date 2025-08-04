@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:myapp/providers/auth_provider.dart';
+import 'package:myapp/providers/auth_provider_old.dart';
 import 'package:myapp/models/user_model.dart';
 import 'package:myapp/theme/app_theme.dart';
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/screens/login/login_screen.dart';
 import 'package:myapp/screens/main_menu/main_menu_screen.dart';
 import 'package:myapp/screens/profile/profile_screen.dart';
@@ -7,7 +8,7 @@ import 'package:myapp/app_routes.dart';
 import 'package:myapp/screens/invoice/invoice_screen.dart';
 import 'package:myapp/screens/print_invoice/print_invoice_screen.dart';
 //import 'package:myapp/services/notification_service.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart'; replaced with river pod
 import 'package:myapp/providers/auth_provider.dart'; 
 
 // Import our new notification service
@@ -24,13 +25,20 @@ Future<void> main() async {
    // Initialize our notification service once when the app starts
   //await NotificationService().init(); 
 
-  // Now, run the app.
+
+    // Wrap the entire app in a ProviderScope
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => AuthProvider(),
-      child: const MyApp(),
+    const ProviderScope(
+      child: MyApp(),
     ),
   );
+  // Now, run the app.
+  //runApp(
+ ///   ChangeNotifierProvider(
+   //   create: (context) => AuthProvider(),
+   //   child: const MyApp(),
+  //  ),
+ // );
 }
 
 
@@ -51,29 +59,20 @@ Future<void> main() async {
 //   );
 // }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+    final authState = ref.watch(authProvider);
     return MaterialApp(
       title: 'Invoice App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) {
-          // The Consumer will rebuild this part whenever AuthProvider changes.
-          // Based on the login state, it returns the correct screen.
-          if (authProvider.isLoggedIn) {
-            return const MainMenuScreen();
-          } else {
-            return const LoginScreen();
-          }
-        },
-      ),
-      // 4. Define all possible navigation paths in your app
+      home: authState.isLoggedIn ? const MainMenuScreen() : const LoginScreen(),
+      // Define all possible navigation paths in your app
       routes: {
         //AppRoutes.authWrapper: (context) => const AuthWrapper(),
         AppRoutes.login: (context) => const LoginScreen(),

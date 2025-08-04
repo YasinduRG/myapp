@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_blue_plus: ^1.31.16 # For Bluetooth functionality
   permission_handler: ^11.3.1 # To handle runtime permissions easily
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +50,10 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   flutter_launcher_icons: "^0.13.1" # Add this line
+  riverpod_generator: ^2.6.5
+  build_runner: ^2.5.4
+  custom_lint: ^0.7.6
+  riverpod_lint: ^2.6.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
