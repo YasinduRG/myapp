@@ -1,31 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:myapp/providers/auth_provider_old.dart';
+//import 'package:provider/provider.dart';
+//import 'package:myapp/providers/auth_provider_old.dart';
 import 'package:myapp/models/user_model.dart';
 import 'package:myapp/theme/app_theme.dart';
 
-class ProfileScreen extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // 1. Import Riverpod
+import 'package:myapp/providers/auth_provider.dart'; // 2. Import the new Riverpod provider
+
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Use Provider.of to get the AuthProvider instance.
-    // 'listen: false' is fine here if you don't expect the user data to change while on this screen.
-    final User? currentUser = Provider.of<AuthProvider>(context).currentUser;
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final User? currentUser = authState.currentUser;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('User Profile', style: TextStyle(color: AppColors.primary)),
-        backgroundColor: AppColors.background,
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Center(
+      // 1. AppBar has been removed.
+      // appBar: AppBar(...)
+      body: SafeArea(
+        // Use SafeArea to avoid system UI (like the notch)
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // 2. New custom header
+              Row(
+                children: [
+                  // Back Button
+                  IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      color: AppColors.primary,
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  // Centered Title
+                  const Expanded(
+                    child: Text(
+                      'User Profile',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  // Spacer to perfectly center the title, matching the IconButton's width
+                  const SizedBox(width: 48.0),
+                ],
+              ),
+              const SizedBox(height: 30), // Spacing after the header
               // Profile Avatar
               const CircleAvatar(
                 radius: 60,
@@ -48,7 +75,9 @@ class ProfileScreen extends StatelessWidget {
               // User Info Card
               Card(
                 elevation: 4,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -81,14 +110,28 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Helper widget to create styled info rows.
-  Widget _buildInfoTile({required IconData icon, required String label, required String value}) {
+  // Helper widget to create styled info rows (no changes needed).
+  Widget _buildInfoTile({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
     return ListTile(
       leading: Icon(icon, color: AppColors.primary),
-      title: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textFaded)),
+      title: Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: AppColors.textFaded,
+        ),
+      ),
       subtitle: Text(
         value,
-        style: const TextStyle(fontSize: 16, color: AppColors.text, fontWeight: FontWeight.w500),
+        style: const TextStyle(
+          fontSize: 16,
+          color: AppColors.text,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
