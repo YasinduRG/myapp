@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz; // Import timezone
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -40,30 +41,26 @@ class NotificationService {
   }
 
   // --- NEW: METHOD FOR SCHEDULED NOTIFICATIONS ---
-  // static Future<void> showScheduledNotification({
-  //   required String title,
-  //   required String body,
-  // }) async {
-  //   await _notificationsPlugin.zonedSchedule(
-  //     1, // Use a different ID for this notification (e.g., 1)
-  //     title,
-  //     body,
-  //     // Schedule it 1 minute from now
-  //     tz.TZDateTime.now(tz.local).add(const Duration(minutes: 1)),
-  //     const NotificationDetails(
-  //       android: AndroidNotificationDetails(
-  //         'DPMC-Invoice-System-Scheduled', // A unique ID for the scheduled channel
-  //         'Scheduled Notification Channel',
-  //         channelDescription: 'DPMC Invoice System Scheduled Notifications',
-  //         importance: Importance.max,
-  //         priority: Priority.high,
-  //       ),
-  //     ),
-  //     // Make sure to match the Android UI time with the scheduled time.
-  //     uiLocalNotificationDateInterpretation:
-  //         UILocalNotificationDateInterpretation.absoluteTime,
-  //     androidAllowWhileIdle:
-  //         true, // Allow notification to appear even when the device is in a low-power idle mode.
-  //   );
-  // }
+  static Future<void> showScheduledNotification({
+    required String title,
+    required String body,
+  }) async {
+    await _notificationsPlugin.zonedSchedule(
+      1, // Use a different ID for this notification
+      title,
+      body,
+      tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'DPMC-Invoice-System',
+          'Notification Channel',
+          channelDescription: 'DPMC Invoice System',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
+      // --- ADD THIS REQUIRED PARAMETER ---
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+  }
 }

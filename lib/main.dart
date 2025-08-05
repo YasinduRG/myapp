@@ -11,7 +11,9 @@ import 'package:myapp/screens/print_invoice/print_invoice_screen.dart';
 //import 'package:provider/provider.dart'; replaced with river pod
 import 'package:myapp/providers/auth_provider.dart';
 import 'package:myapp/screens/test_notify/test_notify.dart';
-import 'package:myapp/services/notification_services.dart'; 
+import 'package:myapp/services/notification_services.dart';
+
+import 'package:timezone/data/latest.dart' as tz;
 
 // Import our new notification service
 //import 'package:myapp/services/notification_service.dart'; ENABLE THIS LATER FIBASE CLOUD NOTIFICATION
@@ -19,38 +21,26 @@ import 'package:myapp/services/notification_services.dart';
 Future<void> main() async {
   // Ensure that Flutter bindings are initialized before calling native code
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
   await NotificationService.initialize();
 
   // Initialize our notification service.
   // This will handle Firebase setup and topic subscription.
- // await NotificationService().initialize(); ENABLE THIS LATER FIBASE CLOUD NOTIFICATION
+  // await NotificationService().initialize(); ENABLE THIS LATER FIBASE CLOUD NOTIFICATION
 
-   // Initialize our notification service once when the app starts
-  //await NotificationService().init(); 
+  // Initialize our notification service once when the app starts
+  //await NotificationService().init();
 
-
-    // Wrap the entire app in a ProviderScope
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  // Wrap the entire app in a ProviderScope
+  runApp(const ProviderScope(child: MyApp()));
   // Now, run the app.
   //runApp(
- ///   ChangeNotifierProvider(
-   //   create: (context) => AuthProvider(),
-   //   child: const MyApp(),
+  ///   ChangeNotifierProvider(
+  //   create: (context) => AuthProvider(),
+  //   child: const MyApp(),
   //  ),
- // );
+  // );
 }
-
-
-
-
-
-
-
-
 
 // void main() {
 //    runApp(
@@ -66,7 +56,7 @@ class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     return MaterialApp(
       title: 'Invoice App',
@@ -80,7 +70,7 @@ class MyApp extends ConsumerWidget {
         //AppRoutes.authWrapper: (context) => const AuthWrapper(),
         AppRoutes.login: (context) => const LoginScreen(),
         AppRoutes.mainMenu: (context) => const MainMenuScreen(),
-        AppRoutes.setupPrint: (context) => const SetupPrintScreen(), 
+        AppRoutes.setupPrint: (context) => const SetupPrintScreen(),
         AppRoutes.invoice: (context) => const InvoiceScreen(),
         AppRoutes.printInvoice: (context) => const PrintInvoiceScreen(),
         AppRoutes.profile: (context) => const ProfileScreen(),
@@ -92,4 +82,3 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
-
