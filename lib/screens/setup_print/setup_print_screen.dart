@@ -42,72 +42,78 @@ class _SetupPrintScreenState extends State<SetupPrintScreen> {
     ].request();
   }
 
-// RECOMMENDED: A more robust way to handle starting a scan
-Future<void> _startSearch() async {
-  // 1. First, check permissions
-  var scanStatus = await Permission.bluetoothScan.status;
-  var locationStatus = await Permission.location.status;
+  // RECOMMENDED: A more robust way to handle starting a scan
+  Future<void> _startSearch() async {
+    // 1. First, check permissions
+    var scanStatus = await Permission.bluetoothScan.status;
+    var locationStatus = await Permission.location.status;
 
-  if (!scanStatus.isGranted || !locationStatus.isGranted) {
-    // If permissions are not granted, request them
-    final statuses = await [
-      Permission.bluetoothScan,
-      Permission.location,
-    ].request();
+    if (!scanStatus.isGranted || !locationStatus.isGranted) {
+      // If permissions are not granted, request them
+      final statuses =
+          await [Permission.bluetoothScan, Permission.location].request();
 
-    // Check again after requesting
-    if (!statuses[Permission.bluetoothScan]!.isGranted || !statuses[Permission.location]!.isGranted) {
-      // If the user *still* denies permissions, show an informative message.
-      if (mounted) {
+      // Check again after requesting
+      if (!statuses[Permission.bluetoothScan]!.isGranted ||
+          !statuses[Permission.location]!.isGranted) {
+        // If the user *still* denies permissions, show an informative message.
+        if (mounted) {
           showSnackBar(
-          message: 'Bluetooth Scan and Location permissions are required to find devices.',
-          type: MessageType.warning, // Use 'warning' to inform the user of a prerequisite.
+            context: context,
+            message:
+                'Bluetooth Scan and Location permissions are required to find devices.',
+            type:
+                MessageType
+                    .warning, // Use 'warning' to inform the user of a prerequisite.
           );
+        }
+        return; // Exit the function
+      }
+    }
+
+    // 2. If we get here, permissions are granted. Now check if Bluetooth is ON.
+    if (await FlutterBluePlus.adapterState.first != BluetoothAdapterState.on) {
+      if (mounted) {
+        showSnackBar(
+          context: context,
+          message: 'Please turn on Bluetooth to scan for devices.',
+          type: MessageType.warning, // 'warning' is also appropriate here.
+        );
       }
       return; // Exit the function
     }
-  }
 
-  // 2. If we get here, permissions are granted. Now check if Bluetooth is ON.
-  if (await FlutterBluePlus.adapterState.first != BluetoothAdapterState.on) {
-    if (mounted) {
-        showSnackBar(
-        message: 'Please turn on Bluetooth to scan for devices.',
-        type: MessageType.warning, // 'warning' is also appropriate here.
-        );
-    }
-    return; // Exit the function
-  }
-
-  // 3. Start the scan
-  setState(() {
-    _isSearching = true;
-    _scanResults.clear();
-  });
-
-  try {
-    await FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
-  } catch (e) {
-    //print("ERROR starting scan: $e");
-    setState(() => _isSearching = false);
-  }
-
-  // Listen to results
-  _scanSubscription = FlutterBluePlus.scanResults.listen((results) {
+    // 3. Start the scan
     setState(() {
-      // Create a Set of existing device IDs to avoid duplicates
-      final existingIds = _scanResults.map((r) => r.device.remoteId).toSet();
-      // Add new, unique results with a non-empty name
-      _scanResults.addAll(
-        results.where(
-          (r) => !existingIds.contains(r.device.remoteId) && r.device.platformName.isNotEmpty,
-        ),
-      );
+      _isSearching = true;
+      _scanResults.clear();
     });
-  });
 
-  _scanSubscription?.onDone(() => setState(() => _isSearching = false));
-}
+    try {
+      await FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
+    } catch (e) {
+      //print("ERROR starting scan: $e");
+      setState(() => _isSearching = false);
+    }
+
+    // Listen to results
+    _scanSubscription = FlutterBluePlus.scanResults.listen((results) {
+      setState(() {
+        // Create a Set of existing device IDs to avoid duplicates
+        final existingIds = _scanResults.map((r) => r.device.remoteId).toSet();
+        // Add new, unique results with a non-empty name
+        _scanResults.addAll(
+          results.where(
+            (r) =>
+                !existingIds.contains(r.device.remoteId) &&
+                r.device.platformName.isNotEmpty,
+          ),
+        );
+      });
+    });
+
+    _scanSubscription?.onDone(() => setState(() => _isSearching = false));
+  }
 
   void _stopSearch() {
     FlutterBluePlus.stopScan();
@@ -146,16 +152,31 @@ Future<void> _startSearch() async {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                          vertical: 4.0,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.arrow_back_ios, color: AppColors.primary),
+                              icon: const Icon(
+                                Icons.arrow_back_ios,
+                                color: AppColors.primary,
+                              ),
                               onPressed: () => Navigator.of(context).pop(),
                             ),
-                            const Text('Bluetooth', style: TextStyle(color: AppColors.primary, fontSize: 18, fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 48), // Spacer to balance the back button
+                            const Text(
+                              'Bluetooth',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 48,
+                            ), // Spacer to balance the back button
                           ],
                         ),
                       ),
@@ -175,29 +196,56 @@ Future<void> _startSearch() async {
                                         borderRadius: BorderRadius.circular(30),
                                         borderSide: BorderSide.none,
                                       ),
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                          ),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
                                 ElevatedButton.icon(
                                   onPressed: () {},
-                                  icon: const Icon(Icons.usb, color: AppColors.white, size: 20),
-                                  label: const Text('Connect', style: TextStyle(color: AppColors.white)),
+                                  icon: const Icon(
+                                    Icons.usb,
+                                    color: AppColors.white,
+                                    size: 20,
+                                  ),
+                                  label: const Text(
+                                    'Connect',
+                                    style: TextStyle(color: AppColors.white),
+                                  ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 16),
                             // Action Buttons
-                            _buildActionButton(icon: Icons.print, label: 'Test Print', color: AppColors.success, onPressed: () {}),
+                            _buildActionButton(
+                              icon: Icons.print,
+                              label: 'Test Print',
+                              color: AppColors.success,
+                              onPressed: () {},
+                            ),
                             const SizedBox(height: 12),
                             _isSearching
-                                ? _buildActionButton(icon: Icons.stop_circle, label: 'Stop Searching', color: AppColors.danger, onPressed: _stopSearch)
-                                : _buildActionButton(icon: Icons.bluetooth_searching, label: 'Search Bluetooth Devices', color: AppColors.primary, onPressed: _startSearch),
+                                ? _buildActionButton(
+                                  icon: Icons.stop_circle,
+                                  label: 'Stop Searching',
+                                  color: AppColors.danger,
+                                  onPressed: _stopSearch,
+                                )
+                                : _buildActionButton(
+                                  icon: Icons.bluetooth_searching,
+                                  label: 'Search Bluetooth Devices',
+                                  color: AppColors.primary,
+                                  onPressed: _startSearch,
+                                ),
                             const SizedBox(height: 16),
                           ],
                         ),
@@ -206,21 +254,26 @@ Future<void> _startSearch() async {
 
                       // Discovered devices list
                       Expanded(
-                        child: _scanResults.isEmpty && _isSearching
-                            ? const Center(child: CircularProgressIndicator())
-                            : _scanResults.isEmpty
+                        child:
+                            _scanResults.isEmpty && _isSearching
+                                ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                                : _scanResults.isEmpty
                                 ? const Center(child: Text('No devices found.'))
                                 : ListView.builder(
-                                    itemCount: _scanResults.length,
-                                    itemBuilder: (context, index) {
-                                      final result = _scanResults[index];
-                                      return ListTile(
-                                        title: Text(result.device.platformName),
-                                        subtitle: Text(result.device.remoteId.toString()),
-                                        onTap: () => _connect(result.device),
-                                      );
-                                    },
-                                  ),
+                                  itemCount: _scanResults.length,
+                                  itemBuilder: (context, index) {
+                                    final result = _scanResults[index];
+                                    return ListTile(
+                                      title: Text(result.device.platformName),
+                                      subtitle: Text(
+                                        result.device.remoteId.toString(),
+                                      ),
+                                      onTap: () => _connect(result.device),
+                                    );
+                                  },
+                                ),
                       ),
                     ],
                   ),
@@ -237,10 +290,18 @@ Future<void> _startSearch() async {
   }
 
   // Helper method for styled buttons
-  Widget _buildActionButton({required IconData icon, required String label, required Color color, required VoidCallback onPressed}) {
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
     return ElevatedButton.icon(
       icon: Icon(icon, color: Colors.white),
-      label: Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+      label: Text(
+        label,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+      ),
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: color,

@@ -12,4 +12,6 @@ class Dealer {
     required this.address,
     required this.city,
   });
+
+  
 }

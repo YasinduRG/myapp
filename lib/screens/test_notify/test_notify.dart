@@ -37,6 +37,7 @@ class TestPage extends StatelessWidget {
 
                 // 2. Use the common showSnackBar function for user feedback
                 showSnackBar(
+                  context: context,
                   message: 'Notification scheduled for 5s from now!',
                   type:
                       MessageType
@@ -57,6 +58,8 @@ class TestPage extends StatelessWidget {
                 // Call the new scheduled notification method
                 // 2. Use the common showSnackBar function for user feedback
                 showSnackBar(
+                                    context: context,
+
                   message: 'Test Error message',
                   type:
                       MessageType
@@ -71,6 +74,8 @@ class TestPage extends StatelessWidget {
                 // Call the new scheduled notification method
                 // 2. Use the common showSnackBar function for user feedback
                 showSnackBar(
+                                    context: context,
+
                   message: 'Test Success message',
                   type:
                       MessageType
@@ -82,8 +87,9 @@ class TestPage extends StatelessWidget {
             const SizedBox(height: 10), // Add some space between buttons
             ElevatedButton(
               onPressed: () {
-
                 showSnackBar(
+                                    context: context,
+
                   message: 'Test Warning message',
                   type:
                       MessageType
@@ -96,7 +102,6 @@ class TestPage extends StatelessWidget {
             const SizedBox(height: 10), // Add some space between buttons
             ElevatedButton(
               onPressed: () {
-
                 showInfoDialog(
                   context: context,
                   title: 'Payment Successful',
@@ -117,31 +122,39 @@ class TestPage extends StatelessWidget {
                   title: 'Connection Failed',
                   content:
                       'Unable to connect to the server. Please check your internet connection and try again.',
-                  isError: true
+                  isError: true,
                 );
               },
               child: const Text('Test Connection Failed message'),
             ),
             const SizedBox(height: 10),
-              // --- Example for Confirmation Dialog ---
-              ElevatedButton(
-                onPressed: () async {
-                  final confirmed = await showConfirmationDialog(
-                    context: context,
-                    title: 'Payment Confirmation',
-                    content: 'Are you sure you want toproceed this payment',
-                    confirmButtonText: 'Proceed',
-                  );
+            // --- Example for Confirmation Dialog ---
+            ElevatedButton(
+              onPressed: () async {
+                final confirmed = await showConfirmationDialog(
+                  context: context,
+                  title: 'Payment Confirmation',
+                  content: 'Are you sure you want toproceed this payment',
+                  confirmButtonText: 'Proceed',
+                );
 
-                  // Act based on the user's choice
-                  if (confirmed) {
-                    showSnackBar(message: 'Payment has been confirmed.', type: MessageType.success);
-                  } else {
-                    showSnackBar(message: 'Payment was cancelled.', type: MessageType.warning);
-                  }
-                },
-                child: const Text('Payment Confirmation'),
-              ),
+                // Act based on the user's choice
+                if (confirmed) {
+                  showSnackBar(
+                    context: context,
+                    message: 'Payment has been confirmed.',
+                    type: MessageType.success,
+                  );
+                } else {
+                  showSnackBar(
+                    context: context,
+                    message: 'Payment was cancelled.',
+                    type: MessageType.warning,
+                  );
+                }
+              },
+              child: const Text('Payment Confirmation'),
+            ),
           ],
         ),
       ),
