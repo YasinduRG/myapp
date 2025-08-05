@@ -12,6 +12,7 @@ import 'package:myapp/screens/print_invoice/print_invoice_screen.dart';
 import 'package:myapp/providers/auth_provider.dart';
 import 'package:myapp/screens/test_notify/test_notify.dart';
 import 'package:myapp/services/notification_services.dart';
+import 'package:myapp/util/snack_bar.dart'; // <-- 1. IMPORT your utils file
 
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -79,6 +80,7 @@ class MyApp extends ConsumerWidget {
         // Example for a future screen:
         // AppRoutes.invoice: (context) => const InvoiceScreen(),
       },
+      scaffoldMessengerKey: scaffoldMessengerKey
     );
   }
 }

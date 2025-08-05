@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:myapp/theme/app_theme.dart';
+import 'package:myapp/util/snack_bar.dart';
 import 'package:myapp/widgets/app_footer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -58,9 +59,10 @@ Future<void> _startSearch() async {
     if (!statuses[Permission.bluetoothScan]!.isGranted || !statuses[Permission.location]!.isGranted) {
       // If the user *still* denies permissions, show an informative message.
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bluetooth Scan and Location permissions are required to find devices.')),
-        );
+          showSnackBar(
+          message: 'Bluetooth Scan and Location permissions are required to find devices.',
+          type: MessageType.warning, // Use 'warning' to inform the user of a prerequisite.
+          );
       }
       return; // Exit the function
     }
@@ -69,9 +71,10 @@ Future<void> _startSearch() async {
   // 2. If we get here, permissions are granted. Now check if Bluetooth is ON.
   if (await FlutterBluePlus.adapterState.first != BluetoothAdapterState.on) {
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please turn on Bluetooth to scan for devices.')),
-      );
+        showSnackBar(
+        message: 'Please turn on Bluetooth to scan for devices.',
+        type: MessageType.warning, // 'warning' is also appropriate here.
+        );
     }
     return; // Exit the function
   }
@@ -85,7 +88,7 @@ Future<void> _startSearch() async {
   try {
     await FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
   } catch (e) {
-    print("ERROR starting scan: $e");
+    //print("ERROR starting scan: $e");
     setState(() => _isSearching = false);
   }
 
