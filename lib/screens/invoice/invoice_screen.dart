@@ -6,6 +6,7 @@ import 'package:myapp/widgets/custom_selection_form_field.dart';
 import 'package:myapp/widgets/selection_sheet.dart';
 import 'package:myapp/models/tin_model.dart';
 import 'package:myapp/models/dealer_model.dart';
+import 'package:myapp/widgets/auth_dealer_view.dart';
 
 // --- MAIN WIDGET: Manages the flow state ---
 class InvoiceScreen extends StatefulWidget {
@@ -281,44 +282,44 @@ class _SelectDealerViewState extends State<SelectDealerView> {
   }
 }
 
-// --- STEP 2: Authenticate Dealer View --- (No changes needed here)
-class AuthenticateDealerView extends StatelessWidget {
-  final Dealer dealer;
-  final VoidCallback onAuthenticated;
-  const AuthenticateDealerView({super.key, required this.dealer, required this.onAuthenticated});
+// --- STEP 2: Authenticate Dealer View  imported from 
+// class AuthenticateDealerView extends StatelessWidget {
+//   final Dealer dealer;
+//   final VoidCallback onAuthenticated;
+//   const AuthenticateDealerView({super.key, required this.dealer, required this.onAuthenticated});
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-            Text('Authenticating: ${dealer.name}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'PIN',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            keyboardType: TextInputType.number,
-            obscureText: true,
-          ),
-            const Spacer(),
-          ElevatedButton(
-            onPressed: onAuthenticated,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            ),
-            child: const Text('Authenticate', style: TextStyle(color: Colors.white, fontSize: 16)),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//             Text('Authenticating: ${dealer.name}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+//             const SizedBox(height: 20),
+//           TextField(
+//             decoration: InputDecoration(
+//               labelText: 'PIN',
+//               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+//             ),
+//             keyboardType: TextInputType.number,
+//             obscureText: true,
+//           ),
+//             const Spacer(),
+//           ElevatedButton(
+//             onPressed: onAuthenticated,
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: AppColors.primary,
+//               minimumSize: const Size(double.infinity, 50),
+//               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+//             ),
+//             child: const Text('Authenticate', style: TextStyle(color: Colors.white, fontSize: 16)),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 
 
