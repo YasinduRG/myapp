@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/theme/app_theme.dart';
-import 'package:myapp/widgets/app_footer.dart';
 import 'package:myapp/models/invoic_model.dart';
 import 'package:myapp/models/dealer_model.dart';
+import 'package:myapp/util/snack_bar.dart';
+import 'package:myapp/widgets/action_button.dart';
 import 'package:myapp/widgets/auth_dealer_view.dart';
+import 'package:myapp/widgets/app_page.dart';
 
 // --- MAIN WIDGET: Manages the flow state ---
 class PrintInvoiceScreen extends StatefulWidget {
@@ -41,11 +43,12 @@ class _PrintInvoiceScreenState extends State<PrintInvoiceScreen> {
     // This dealer is created here for demonstration.
     // In a real app, you would likely fetch or pass this data.
     final dealerToAuth = Dealer(
-        name: 'B Motors',
-        surname: 'B Motors',
-        accountCode: 'AC2000123231',
-        address: 'Test Address 2',
-        city: 'City 2');
+      name: 'B Motors',
+      surname: 'B Motors',
+      accountCode: 'AC2000123231',
+      address: 'Test Address 2',
+      city: 'City 2',
+    );
 
     switch (_currentStep) {
       case 0:
@@ -64,44 +67,37 @@ class _PrintInvoiceScreenState extends State<PrintInvoiceScreen> {
         currentView = const Center(child: Text('Error: Invalid step'));
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios,
-                        color: AppColors.primary),
-                    onPressed: _goBack,
-                  ),
-                  Expanded(
-                    child: Text(
-                      _currentStep == 0 ? 'Authenticate Dealer' : 'Print Invoice',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(width: 48), // Balances the back button
-                ],
-              ),
-            ),
-            Expanded(child: currentView),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: AppFooter(),
-            )
-          ],
-        ),
-      ),
+    final String currentTitle =
+        _currentStep == 0 ? 'Authenticate Dealer' : 'Print Invoice';
+
+    return AppPage(
+      title: currentTitle,
+      onBack: _goBack, // Pass our custom back logic for the multi-step flow.
+      // Since the child views likely manage their own padding,
+      // we set the AppPage's contentPadding to zero to avoid double padding.
+      contentPadding: EdgeInsets.zero,
+
+      // The current step's view is passed as the child.
+      // AppPage will handle placing it correctly.
+      child: currentView,
     );
+    // return Scaffold(
+    //   backgroundColor: AppColors.background,
+    //   // Use the new CommonHeader in the appBar property
+    //   appBar: AppHeader(
+    //     title: currentTitle,
+    //     onBack: _goBack, // Pass the custom back handler
+    //   ),
+    //   body: SafeArea(
+    //     child: Column(
+    //       children: [
+    //         Expanded(child: currentView),
+    //         //const Padding(padding: EdgeInsets.all(16.0), child: AppFooter()),
+    //         const AppFooter(),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 }
 
@@ -117,6 +113,40 @@ class PrintInvoiceMainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //   return LayoutBuilder(
+    //   builder: (BuildContext context, BoxConstraints constraints) {
+    //     // 'constraints.maxHeight' gives us the actual available height of the viewport.
+
+    //     return Container(
+    //       // 2. Create a container with a minimum height equal to the viewport height.
+    //       // This ensures our Column has a fixed, bounded height to work with.
+    //       constraints: BoxConstraints(minHeight: constraints.maxHeight),
+    //       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+    //       child: Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           // This content stays at the top
+    //           const SizedBox(height: 24),
+    //           Text(
+    //             dealer.name,
+    //             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    //           ),
+    //           const SizedBox(height: 16),
+    //           _buildInvoiceTable(),
+
+    //           // 3. The Spacer now works! It knows exactly how much space to fill
+    //           // to push the next items to the bottom of the container.
+    //           const Spacer(),
+
+    //           // This content is now correctly pushed to the bottom
+    //           _buildConfirmationBox(),
+    //           const SizedBox(height: 20),
+    //           _buildAgreeButton(),
+    //         ],
+    //       ),
+    //     );
+    //   },
+    // );
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), // No top padding
       child: Column(
@@ -141,32 +171,20 @@ class PrintInvoiceMainScreen extends StatelessWidget {
           const SizedBox(height: 20),
 
           // 5. Agree Button
-          _buildAgreeButton(),
+          ActionButton(
+            icon: Icons.handshake_outlined,
+            label: 'Agree',
+            onPressed: () {
+              showSnackBar(
+                context: context,
+                message: "Print Success !",
+                type: MessageType.success,
+              );
+            },
+          ),
           // 6. MODIFIED: AppFooter is removed as it's now handled by the parent screen.
         ],
       ),
-    );
-  }
-
-  // Helper method to build the header
-  Widget _buildHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        const Text(
-          'Print Invoice',
-          style: TextStyle(
-            color: AppColors.primary,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(width: 48), // Spacer to balance the back button
-      ],
     );
   }
 
@@ -240,7 +258,6 @@ class PrintInvoiceMainScreen extends StatelessWidget {
     );
   }
 
-  // Helper method to build the confirmation message box
   Widget _buildConfirmationBox() {
     return Container(
       width: double.infinity,
@@ -253,25 +270,6 @@ class PrintInvoiceMainScreen extends StatelessWidget {
       child: const Text(
         'All Items Were Received in Good Condition fa...',
         style: TextStyle(color: AppColors.success, fontWeight: FontWeight.w500),
-      ),
-    );
-  }
-
-  // Helper method to build the main action button
-  Widget _buildAgreeButton() {
-    return ElevatedButton.icon(
-      onPressed: () {
-        // Handle agree action
-      },
-      icon: const Icon(Icons.handshake_outlined, color: AppColors.white),
-      label: const Text(
-        'Agree',
-        style: TextStyle(color: AppColors.white, fontSize: 16),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        minimumSize: const Size(double.infinity, 50),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
     );
   }

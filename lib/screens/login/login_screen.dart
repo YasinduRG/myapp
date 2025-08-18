@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/widgets/app_footer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // 1. Import Riverpod
-import 'package:myapp/providers/auth_provider.dart';      // 2. Import the new Riverpod provider
+import 'package:myapp/providers/auth_provider.dart'; // 2. Import the new Riverpod provider
+import 'package:myapp/widgets/action_button.dart';
 
-class LoginScreen extends ConsumerStatefulWidget  {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
@@ -14,7 +15,6 @@ class LoginScreen extends ConsumerStatefulWidget  {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-
   final _usernameController = TextEditingController(text: 'yasindu');
   final _passwordController = TextEditingController(text: '12345');
 
@@ -29,11 +29,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _handleLogin() {
     // Hide the keyboard
     FocusScope.of(context).unfocus();
-
     final username = _usernameController.text;
     final password = _passwordController.text;
-
     ref.read(authProvider.notifier).login(username, password);
+  }
+
+  void _handleClear() {
+    _usernameController.clear();
+    _passwordController.clear();
   }
 
   @override
@@ -49,7 +52,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           absorbing: authState.isLoading,
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 20.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -63,8 +69,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: Image.asset(
                           'assets/images/dpmc.png',
                           fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.business, size: 50, color: AppColors.danger),
+                          errorBuilder:
+                              (context, error, stackTrace) => const Icon(
+                                Icons.business,
+                                size: 50,
+                                color: AppColors.danger,
+                              ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -90,10 +100,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 8),
                   const Text(
                     'Log in to your account',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textFaded,
-                    ),
+                    style: TextStyle(fontSize: 16, color: AppColors.textFaded),
                   ),
                   const SizedBox(height: 30),
 
@@ -104,14 +111,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Center(
                         child: Text(
                           authState.errorMessage!,
-                          style: const TextStyle(color: AppColors.danger, fontSize: 16),
+                          style: const TextStyle(
+                            color: AppColors.danger,
+                            fontSize: 16,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-                  _buildTextField(controller: _usernameController, hintText: 'Username'),
+                  _buildTextField(
+                    controller: _usernameController,
+                    hintText: 'Username',
+                  ),
                   const SizedBox(height: 20),
-                  _buildTextField(controller: _passwordController, hintText: 'Password', obscureText: true),
+                  _buildTextField(
+                    controller: _passwordController,
+                    hintText: 'Password',
+                    obscureText: true,
+                  ),
                   const SizedBox(height: 20),
                   Align(
                     alignment: Alignment.centerRight,
@@ -119,7 +136,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onPressed: () {},
                       child: const Text(
                         'Forgot password?',
-                        style: TextStyle(color: AppColors.primary, fontSize: 14),
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   ),
@@ -129,34 +149,53 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   // 10. Use authState to check the loading status.
                   authState.isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : _buildActionButton(
-                          icon: Icons.check_circle_outline,
-                          label: 'Login',
-                          color: AppColors.primary,
-                          onPressed: _handleLogin,
-                        ),
+                      : ActionButton(
+                        // Replaced here
+                        icon: Icons.check_circle_outline,
+                        label: 'Login',
+                        onPressed: _handleLogin,
+                      ),
+                  // : _buildActionButton(
+                  //     icon: Icons.check_circle_outline,
+                  //     label: 'Login',
+                  //     color: AppColors.primary,
+                  //     onPressed: _handleLogin,
+                  //   ),
                   const SizedBox(height: 16),
-
-                  _buildActionButton(
+                  ActionButton(
+                    // Replaced here
                     icon: Icons.refresh,
                     label: 'Refresh',
                     color: AppColors.success,
-                    onPressed: () {
-                      _usernameController.clear();
-                      _passwordController.clear();
-                      // You can also add a call to clear the error message if you want
-                      // ref.read(authProvider.notifier).clearError(); // (This would be a new method in your notifier)
-                    },
+                    onPressed: _handleClear,
                   ),
+                  // _buildActionButton(
+                  //   icon: Icons.refresh,
+                  //   label: 'Refresh',
+                  //   color: AppColors.success,
+                  //   onPressed: () {
+                  //     _usernameController.clear();
+                  //     _passwordController.clear();
+                  //     // You can also add a call to clear the error message if you want
+                  //     // ref.read(authProvider.notifier).clearError(); // (This would be a new method in your notifier)
+                  //   },
+                  // ),
                   const SizedBox(height: 16),
-
-                  _buildActionButton(
+                  ActionButton(
+                    // Replaced here
                     icon: Icons.cancel_outlined,
                     label: 'Cancel',
                     color: AppColors.danger,
                     onPressed: () {},
                   ),
-                  const SizedBox(height: 50),
+
+                  // _buildActionButton(
+                  //   icon: Icons.cancel_outlined,
+                  //   label: 'Cancel',
+                  //   color: AppColors.danger,
+                  //   onPressed: () {},
+                  // ),
+                  const SizedBox(height: 30),
 
                   const AppFooter(),
                 ],
@@ -168,9 +207,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-
   // Helper method for text fields (no changes needed)
-  Widget _buildTextField({required TextEditingController controller, required String hintText, bool obscureText = false}) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    bool obscureText = false,
+  }) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
@@ -182,24 +224,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-      ),
-    );
-  }
-
-  // Helper method for action buttons (no changes needed)
-  Widget _buildActionButton({required IconData icon, required String label, required Color color, required VoidCallback onPressed}) {
-    return ElevatedButton.icon(
-      icon: Icon(icon, color: Colors.white),
-      label: Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        minimumSize: const Size(double.infinity, 50),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 20,
         ),
       ),
     );
   }
+
 }

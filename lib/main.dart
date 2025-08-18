@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/screens/login/login_screen.dart';
 import 'package:myapp/screens/main_menu/main_menu_screen.dart';
 import 'package:myapp/screens/profile/profile_screen.dart';
+import 'package:myapp/screens/reciept/reciept_screen.dart';
 import 'package:myapp/screens/setup_print/setup_print_screen.dart';
 import 'package:myapp/app_routes.dart';
 import 'package:myapp/screens/invoice/invoice_screen.dart';
@@ -76,7 +77,7 @@ class MyApp extends ConsumerWidget {
         AppRoutes.printInvoice: (context) => const PrintInvoiceScreen(),
         AppRoutes.profile: (context) => const ProfileScreen(),
         AppRoutes.testNotify: (context) => const TestPage(),
-
+        AppRoutes.reciept: (context) => const RecieptScreen(),
         // Example for a future screen:
         // AppRoutes.invoice: (context) => const InvoiceScreen(),
       },

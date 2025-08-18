@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 
 class AppFooter extends StatelessWidget {
-  const AppFooter({super.key});
+  final double height;
+  const AppFooter({
+    super.key,
+    this.height = 60.0 // Default height
+    });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.all(16.0),
       width: double.infinity,
-      height: 80,
+      height: height,
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/dpmc_footer.png'),
           fit: BoxFit.contain,
-          // Handle image loading errors gracefully
           onError: _handleImageError,
         ),
       ),
     );
   }
-
-  // Private helper to show an error message if the image fails to load
   static void _handleImageError(Object exception, StackTrace? stackTrace) {
     debugPrint("Footer image failed to load: $exception");
-    // Optionally, you could display a fallback widget here
   }
 }

@@ -58,7 +58,9 @@ class MainMenuScreen extends ConsumerWidget {
                     _MenuCard(
                       icon: Icons.article,
                       label: 'Receipt',
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.reciept);
+                      },
                     ),
                     _MenuCard(
                       icon: Icons.route,
@@ -117,8 +119,6 @@ class MainMenuScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-
-              // 3. Footer
               const AppFooter(),
             ],
           ),
@@ -128,79 +128,7 @@ class MainMenuScreen extends ConsumerWidget {
   }
 }
 
-// void _showLogoutConfirmationDialog(BuildContext context,WidgetRef ref) {
-//   showDialog(
-//     context: context,
-//     barrierDismissible: false, // User must tap a button to dismiss
-//     builder: (BuildContext dialogContext) {
-//       return AlertDialog(
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(16),
-//         ),
-//         title: const Text(
-//           'Are You Sure You Want to Leave?',
-//           textAlign: TextAlign.center,
-//           style: TextStyle(
-//             fontWeight: FontWeight.bold,
-//             fontSize: 18,
-//           ),
-//         ),
-//         content: Column(
-//           mainAxisSize: MainAxisSize.min, // Make the column content-sized
-//           children: [
-//             // "Yes, Log out" button
-//             SizedBox(
-//               width: double.infinity,
-//               child: ElevatedButton(
-//                 style: ElevatedButton.styleFrom(
-//                   backgroundColor: AppColors.danger, // Red color for leaving
-//                   shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(30),
-//                   ),
-//                   padding: const EdgeInsets.symmetric(vertical: 12),
-//                 ),
-//                 onPressed: () {
-//                   // Dismiss the dialog first
-//                   Navigator.of(dialogContext).pop();
-//                   ref.read(authProvider.notifier).logout();
-//                   //Provider.of<AuthProvider>(context, listen: false).logout();
-//                   // Then navigate to the login screen
-//                   //Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-//                 },
-//                 child: const Text(
-//                   'Yes, Log out',
-//                   style: TextStyle(color: AppColors.white, fontSize: 16),
-//                 ),
-//               ),
-//             ),
-//             const SizedBox(height: 12),
-//             // "No, I'm Staying" button
-//             SizedBox(
-//               width: double.infinity,
-//               child: ElevatedButton(
-//                 style: ElevatedButton.styleFrom(
-//                   backgroundColor: AppColors.primary, // Blue color for staying
-//                   shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(30),
-//                   ),
-//                   padding: const EdgeInsets.symmetric(vertical: 12),
-//                 ),
-//                 onPressed: () {
-//                   // Just dismiss the dialog
-//                   Navigator.of(dialogContext).pop();
-//                 },
-//                 child: const Text(
-//                   'No, I\'m Staying',
-//                   style: TextStyle(color: AppColors.white, fontSize: 16),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       );
-//     },
-//   );
-// }
+
 // Helper widget for creating each card in the menu grid
 class _MenuCard extends StatelessWidget {
   const _MenuCard({
