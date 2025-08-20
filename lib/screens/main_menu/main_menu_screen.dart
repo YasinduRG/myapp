@@ -63,6 +63,15 @@ class MainMenuScreen extends ConsumerWidget {
                       },
                     ),
                     _MenuCard(
+                      icon:
+                          Icons.assignment_return, // Suitable icon for returns
+                      label: 'Returns',
+                      onTap: () {
+                        // You will need to define AppRoutes.returns in your router
+                        Navigator.pushNamed(context, AppRoutes.returns);
+                      },
+                    ),
+                    _MenuCard(
                       icon: Icons.route,
                       label: 'Route Selection',
                       onTap: () {},
@@ -70,7 +79,9 @@ class MainMenuScreen extends ConsumerWidget {
                     _MenuCard(
                       icon: Icons.replay_circle_filled,
                       label: 'Re-Print',
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.reprint);
+                      },
                     ),
                     _MenuCard(
                       icon: Icons.settings,
@@ -127,7 +138,6 @@ class MainMenuScreen extends ConsumerWidget {
     );
   }
 }
-
 
 // Helper widget for creating each card in the menu grid
 class _MenuCard extends StatelessWidget {

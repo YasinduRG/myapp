@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/theme/app_theme.dart';
 
-
 class CustomSelectionFormField<T> extends StatelessWidget {
   final String labelText;
   final T? selectedValue;
   final String Function(T) displayString;
   final Future<void> Function(BuildContext) onShowPicker;
-  
+
   // 1. ADDED: A callback for the new help button.
   //final VoidCallback? onHelpPressed;
 
@@ -17,7 +16,7 @@ class CustomSelectionFormField<T> extends StatelessWidget {
     this.selectedValue,
     required this.displayString,
     required this.onShowPicker,
-   // this.onHelpPressed, // Added to the constructor.
+    // this.onHelpPressed, // Added to the constructor.
   });
 
   @override
@@ -33,28 +32,32 @@ class CustomSelectionFormField<T> extends StatelessWidget {
             child: InputDecorator(
               decoration: InputDecoration(
                 labelText: labelText,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: Text(
-                selectedValue != null ? displayString(selectedValue as T) : 'Tap to select',
+                selectedValue != null
+                    ? displayString(selectedValue as T)
+                    : 'Tap to select',
               ),
             ),
           ),
         ),
         // 4. ADDED: The help icon button, which only appears if onHelpPressed is provided.
-      //  if (onHelpPressed != null) ...[
-          const SizedBox(width: 8),
-          // Using an IconButton for semantics and correct tap target size.
-          IconButton(
-            onPressed: () => onShowPicker(context),
-            icon: const Icon(Icons.question_mark_rounded),
-            style: IconButton.styleFrom(
-              backgroundColor: AppColors.primary, // Blue color from the image
-              foregroundColor: AppColors.white,
-              padding: const EdgeInsets.all(14),
-            ),
+        //  if (onHelpPressed != null) ...[
+        const SizedBox(width: 8),
+        // Using an IconButton for semantics and correct tap target size.
+        IconButton(
+          onPressed: () => onShowPicker(context),
+          icon: const Icon(Icons.question_mark_rounded),
+          style: IconButton.styleFrom(
+            backgroundColor: AppColors.primary, // Blue color from the image
+            foregroundColor: AppColors.white,
+            padding: const EdgeInsets.all(14),
           ),
-       // ],
+        ),
+        // ],
       ],
     );
   }
@@ -174,7 +177,7 @@ class CustomSelectionFormField<T> extends StatelessWidget {
 //                 controller: controller,
 //                 decoration: InputDecoration(
 //                   filled: true,
-//                   fillColor: Colors.white,
+//                   fillColor: AppColors.white,
 //                   labelText: labelText,
 //                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
 //                   suffixIcon: const Icon(Icons.arrow_drop_down),

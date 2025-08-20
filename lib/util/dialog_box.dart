@@ -6,7 +6,7 @@ Widget _buildDialogButton({
   required String text,
   required VoidCallback onPressed,
   required Color backgroundColor,
-  Color textColor = Colors.white,
+  Color textColor = AppColors.white,
 }) {
   return SizedBox(
     width: double.infinity, // Make button take full width
@@ -20,13 +20,16 @@ Widget _buildDialogButton({
           borderRadius: BorderRadius.circular(50), // Fully rounded corners
         ),
       ),
-      child: Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
     ),
   );
 }
 
-/// A generic dialog function. All other dialogs are based on this.  
-Future<T?> showAppDialog<T>({    
+/// A generic dialog function. All other dialogs are based on this.
+Future<T?> showAppDialog<T>({
   required BuildContext context,
   required String title,
   Widget? content,
@@ -49,27 +52,28 @@ Future<T?> showAppDialog<T>({
         // The main message content
         content: content,
         // The buttons at the bottom, wrapped in a Column
-        actions: actions != null && actions.isNotEmpty
-            ? [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: actions.map((action) {
-                    // Add spacing between buttons
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: action,
-                    );
-                  }).toList(),
-                ),
-              ]
-            : null,
+        actions:
+            actions != null && actions.isNotEmpty
+                ? [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children:
+                        actions.map((action) {
+                          // Add spacing between buttons
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: action,
+                          );
+                        }).toList(),
+                  ),
+                ]
+                : null,
         actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       );
     },
   );
 }
-
 
 /// Shows a styled confirmation dialog.
 ///
@@ -79,12 +83,13 @@ Future<bool> showConfirmationDialog({
   required String title,
   String? content,
   String confirmButtonText = 'Yes', // New default
-  String cancelButtonText = 'No',   // New default
+  String cancelButtonText = 'No', // New default
 }) async {
   final result = await showAppDialog<bool>(
     context: context,
     title: title,
-    content: content != null ? Text(content, textAlign: TextAlign.center) : null,
+    content:
+        content != null ? Text(content, textAlign: TextAlign.center) : null,
     actions: [
       // The "Confirm" button (e.g., "Yes, Log out")
       _buildDialogButton(
@@ -110,11 +115,11 @@ Future<bool> showConfirmationDialog({
 
 /// Shows a simple informational (success or error) dialog with a single action button.
 Future<void> showInfoDialog({
-    required BuildContext context,
-    required String title,
-    required String content,
-    String buttonText = 'Ok', //default
-    bool isError = false,
+  required BuildContext context,
+  required String title,
+  required String content,
+  String buttonText = 'Ok', //default
+  bool isError = false,
 }) {
   return showAppDialog(
     context: context,

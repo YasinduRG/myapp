@@ -9,4 +9,6 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String testNotify = '/testNotify';
   static const String reciept = '/reciept';
+  static const String returns = '/returns';
+  static const String reprint = '/reprint';
 }

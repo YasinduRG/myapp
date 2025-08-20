@@ -33,7 +33,7 @@ void showSnackBar({
   final snackBar = SnackBar(
     content: Text(
       message,
-      style: const TextStyle(color: Colors.white), // Ensure text is readable
+      style: const TextStyle(color: AppColors.white), // Ensure text is readable
     ),
     backgroundColor: backgroundColor,
     duration: duration,

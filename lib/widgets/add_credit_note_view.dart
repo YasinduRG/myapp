@@ -1,0 +1,158 @@
+import 'package:flutter/material.dart';
+import 'package:myapp/models/column_model.dart';
+import 'package:myapp/models/credit_note_model.dart';
+import 'package:myapp/theme/app_theme.dart';
+import 'package:myapp/widgets/action_button.dart';
+import 'package:myapp/widgets/app_table.dart';
+
+class AddCreditNotesView extends StatefulWidget {
+  // Callback to pass the final list of notes up to the parent
+  final Function(List<CreditNote>) onSubmit;
+  final List<CreditNote> initialNotes;
+
+
+  const AddCreditNotesView({super.key, required this.onSubmit,
+  this.initialNotes = const [], 
+  });
+
+  @override
+  State<AddCreditNotesView> createState() => _AddCreditNotesViewState();
+}
+
+class _AddCreditNotesViewState extends State<AddCreditNotesView> {
+  final _crnController = TextEditingController();
+  final _amountController = TextEditingController();
+  // final List<CreditNote> _addedCreditNotes = [];
+  late final List<CreditNote> _addedCreditNotes;
+
+
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the local list with a *copy* of the list passed from the parent.
+    // This is important so that changes are only saved when the user hits 'Submit'.
+    _addedCreditNotes = List<CreditNote>.from(widget.initialNotes);
+  }
+
+  void _addNoteToList() {
+    final crn = _crnController.text;
+    final amount = double.tryParse(_amountController.text);
+
+    if (crn.isNotEmpty && amount != null && amount > 0) {
+      setState(() {
+        _addedCreditNotes.add(CreditNote(crnNumber: crn, amount: amount));
+      });
+      _crnController.clear();
+      _amountController.clear();
+      FocusScope.of(context).unfocus(); // Dismiss keyboard
+    } else {
+
+
+      // Optional: Show an error message if input is invalid
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid CRN and amount.')),
+      );
+    }
+  }
+
+  void _removeNoteFromList(CreditNote note) {
+    setState(() {
+      _addedCreditNotes.remove(note);
+    });
+  }
+
+  @override
+  void dispose() {
+    _crnController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          // Input Fields
+          TextField(
+            controller: _crnController,
+            decoration: const InputDecoration(
+              labelText: 'CRN No',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _amountController,
+            decoration: const InputDecoration(
+              labelText: 'CRN Amount',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 24),
+
+          // Add Button
+          ActionButton(
+            label: 'Add Credit Note',
+            icon: Icons.add_card, // Example icon
+            onPressed: _addNoteToList,
+            color: AppColors.success,
+          ),
+          const SizedBox(height: 24),
+
+          // Table of Added Notes
+          Expanded(
+            child: FilterableListView<CreditNote>(
+              items: _addedCreditNotes,
+              searchHintText: 'Search...',
+              filterLogic: (allItems, query) {
+                if (query.isEmpty) return allItems;
+                return allItems.where((note) {
+                  final crnLower = note.crnNumber.toLowerCase();
+                  final queryLower = query.toLowerCase();
+                  return crnLower.contains(queryLower);
+                }).toList();
+              },
+              columns: [
+                DynamicColumn<CreditNote>(
+                  label: 'Credit Note No.',
+                  flex: 3,
+                  cellBuilder: (context, item) => Text(item.crnNumber),
+                ),
+                DynamicColumn<CreditNote>(
+                  label: 'Credit Note Amount',
+                  flex: 3,
+                  cellBuilder:
+                      (context, item) => Text(item.amount.toStringAsFixed(2)),
+                ),
+                DynamicColumn<CreditNote>(
+                  label: '',
+                  flex: 1,
+                  cellBuilder: (context, item) {
+                    return IconButton(
+                      icon: const Icon(Icons.close, color: AppColors.disabled),
+                      onPressed: () => _removeNoteFromList(item),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Submit Button
+          ActionButton(
+            label: 'Submit',
+            onPressed: () => widget.onSubmit(_addedCreditNotes),
+            disabled: _addedCreditNotes.isEmpty,
+          ),
+        ],
+      ),
+    );
+  }
+}

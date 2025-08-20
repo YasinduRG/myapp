@@ -34,7 +34,7 @@ final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
 //   final snackBar = SnackBar(
 //     content: Text(
 //       message,
-//       style: const TextStyle(color: Colors.white),
+//       style: const TextStyle(color: AppColors.white),
 //     ),
 //     backgroundColor: backgroundColor,
 //     duration: duration,
@@ -105,7 +105,7 @@ void showSnackBar({
       left: 16,
       right: 16,
     ),
-    
+
     // The content is our custom-designed widget
     content: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -135,13 +135,13 @@ void showSnackBar({
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: AppColors.white,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   message,
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  style: const TextStyle(color: AppColors.white, fontSize: 14),
                 ),
               ],
             ),
@@ -153,7 +153,7 @@ void showSnackBar({
               // Hides the current SnackBar when tapped
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
             },
-            child: const Icon(Icons.close, color: Colors.white, size: 24),
+            child: const Icon(Icons.close, color: AppColors.white, size: 24),
           ),
         ],
       ),

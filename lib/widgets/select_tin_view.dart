@@ -4,6 +4,7 @@ import 'package:myapp/models/dealer_model.dart';
 import 'package:myapp/models/tin_model.dart';
 import 'package:myapp/widgets/action_button.dart';
 import 'package:myapp/widgets/custom_selection_form_field.dart';
+import 'package:myapp/widgets/dealer_info_card.dart';
 import 'package:myapp/widgets/selection_sheet.dart';
 
 class SelectTinNumberView extends StatefulWidget {
@@ -67,12 +68,10 @@ class _SelectTinNumberViewState extends State<SelectTinNumberView> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) {
-        // Assuming a generic SelectionSheet widget exists.
         return SelectionSheet<TinData>(
           title: 'Select TIN Number',
           items: _filteredTins, // Use the filtered list.
           searchController: _searchController, // Pass the search controller.
-          // Define the header for the list.
           headerBuilder: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -90,7 +89,6 @@ class _SelectTinNumberViewState extends State<SelectTinNumberView> {
               ),
             ],
           ),
-          // Define how each item in the list is built.
           itemBuilder: (TinData tin) {
             return InkWell(
               onTap: () => Navigator.of(context).pop(tin),
@@ -114,8 +112,6 @@ class _SelectTinNumberViewState extends State<SelectTinNumberView> {
         );
       },
     );
-
-    // If a TIN was selected, call the callback function.
     if (selectedTin != null) {
       widget.onTinNumberSelected(selectedTin);
     }
@@ -128,29 +124,15 @@ class _SelectTinNumberViewState extends State<SelectTinNumberView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              '${widget.dealer.name} - ${widget.dealer.accountCode}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
+          DealerInfoCard(dealer: widget.dealer),
           const SizedBox(height: 16),
-          // The custom form field to show the selection and trigger the sheet.
           CustomSelectionFormField<TinData>(
             labelText: 'Select TIN Number',
             selectedValue: widget.selectedTin,
-            // Display the TIN number in the field when selected.
             displayString: (tin) => tin.tinNumber,
             onShowPicker: _showTinSelection,
           ),
-          const Spacer(), // Pushes the button to the bottom.
-          // The submit button.
+          const Spacer(),
           ActionButton(
             icon: Icons.check_circle_outline,
             label: 'Submit',

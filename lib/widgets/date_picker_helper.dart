@@ -19,7 +19,7 @@ Future<DateTime?> selectDate(BuildContext context, DateTime? initialDate) {
                 data: Theme.of(context).copyWith(
                   colorScheme: const ColorScheme.light(
                     primary: AppColors.primary,
-                    onPrimary: Colors.white,
+                    onPrimary: AppColors.white,
                     onSurface: Colors.black,
                   ),
                 ),
@@ -80,7 +80,7 @@ Future<DateTime?> selectDate(BuildContext context, DateTime? initialDate) {
 //         data: Theme.of(context).copyWith(
 //           colorScheme: const ColorScheme.light(
 //             primary: AppColors.primary,
-//             onPrimary: Colors.white,
+//             onPrimary: AppColors.white,
 //             onSurface: Colors.black,
 //           ),
 //           textButtonTheme: TextButtonThemeData(

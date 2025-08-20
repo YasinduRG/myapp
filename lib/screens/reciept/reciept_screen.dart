@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models/credit_note_model.dart';
+import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/widgets/action_button.dart';
+import 'package:myapp/widgets/add_credit_note_view.dart';
 //import 'package:myapp/views/cheque_details_view.dart'; // Adjust path
 import 'package:myapp/widgets/app_page.dart';
 import 'package:myapp/util/snack_bar.dart';
@@ -14,6 +17,25 @@ class RecieptScreen extends StatefulWidget {
 
 class _RecieptScreenState extends State<RecieptScreen> {
   int _currentStep = 0;
+  List<CreditNote> _creditNotes = []; // This will be useful later
+
+  // This is the callback that will be passed to AddCreditNotesView.
+  // It receives the updated list FROM the child view.
+  void _updateAndSaveCreditNotes(List<CreditNote> updatedNotes) {
+    setState(() {
+      // 2. Update the parent's master list with the submitted changes
+      _creditNotes = updatedNotes;
+
+      // 3. Navigate back to the first view (or wherever you need to go)
+      _currentStep = 0;
+    });
+    showSnackBar(
+      context: context,
+      message: '${updatedNotes.length} credit notes have been saved.',
+      type: MessageType.success,
+    );
+    // Optional: Show a confirmation message
+  }
 
   void _submitChequeDetails() {
     // This is where you would process the data
@@ -25,32 +47,72 @@ class _RecieptScreenState extends State<RecieptScreen> {
     );
 
     setState(() {
+      _currentStep = 2; // Move to the confirmation/summary view
+    });
+  }
+
+  void _gotoaddCreditNotes() {
+    setState(() {
       _currentStep = 1; // Move to the confirmation/summary view
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return AppPage(
-      title: 'Cheque Deposit',
-      onBack: () {
-        if (_currentStep > 0) {
+  void _onback(){
+    if (_currentStep > 0) {
           setState(() {
             _currentStep--; // Go back to the previous step
           });
         } else {
           Navigator.of(context).pop(); // Exit the page
-        }
-      },
+    }
+  }
+
+
+
+  // void _addCreditNotes(List<CreditNote> notes) {
+  //   // Save CREDIT NOTES HERE LATER
+  //   setState(() {
+  //     _currentStep = 0; // Move to the confirmation/summary view
+  //   });
+  // }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppPage(
+      title: _getCurrentTitle(),
+      onBack:_onback,
       child: _buildCurrentView(),
     );
   }
 
+String _getCurrentTitle() {
+  switch (_currentStep) {
+    case 0:
+      return 'Cheque Deposit Details'; 
+    case 1:
+      return 'Add Credit Notes';       
+    case 2:
+      return 'Success';                
+    default:
+      return 'Error';         
+  }
+}
+
   Widget _buildCurrentView() {
     switch (_currentStep) {
       case 0:
-        return RecieptDetailsView(onSubmit: _submitChequeDetails);
+        return RecieptDetailsView(
+          onSubmit: _submitChequeDetails,
+          addCreditnote: _gotoaddCreditNotes,
+        );
+
       case 1:
+        return AddCreditNotesView(
+          initialNotes: _creditNotes,
+          onSubmit: _updateAndSaveCreditNotes,
+        );
+
+      case 2:
         // You can create a new view here for confirmation or summary
         return Center(
           child: Column(
@@ -66,15 +128,20 @@ class _RecieptScreenState extends State<RecieptScreen> {
           ),
         );
       default:
-        return RecieptDetailsView(onSubmit: _submitChequeDetails);
+        return AddCreditNotesView(onSubmit: _updateAndSaveCreditNotes);
     }
   }
 }
 
 class RecieptDetailsView extends StatefulWidget {
   final VoidCallback onSubmit;
+  final VoidCallback addCreditnote;
 
-  const RecieptDetailsView({super.key, required this.onSubmit});
+  const RecieptDetailsView({
+    super.key,
+    required this.onSubmit,
+    required this.addCreditnote,
+  });
 
   @override
   State<RecieptDetailsView> createState() => _RecieptDetailsViewState();
@@ -122,6 +189,13 @@ class _RecieptDetailsViewState extends State<RecieptDetailsView> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            ActionButton(
+              label: 'Add Credit Note',
+              icon: Icons.add_card, // Example icon
+              onPressed: widget.addCreditnote,
+              color: AppColors.success,
+            ),
+            const SizedBox(height: 16),
             _buildTextField(
               controller: _chequeNoController,
               labelText: 'Cheque No.',
@@ -176,14 +250,14 @@ class _RecieptDetailsViewState extends State<RecieptDetailsView> {
       decoration: InputDecoration(
         labelText: labelText,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: AppColors.border),
         ),
       ),
     );

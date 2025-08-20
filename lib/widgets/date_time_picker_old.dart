@@ -47,9 +47,9 @@
 //           child: Container(
 //             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
 //             decoration: BoxDecoration(
-//               color: Colors.white,
+//               color: AppColors.white,
 //               borderRadius: BorderRadius.circular(12),
-//               border: Border.all(color: Colors.grey.shade300),
+//               border: Border.all(color: AppColors.border),
 //             ),
 //             child: Row(
 //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -61,7 +61,7 @@
 //                   style: TextStyle(
 //                     color:
 //                         selectedDate == null
-//                             ? Colors.grey.shade600
+//                             ? AppColors.border
 //                             : Colors.black,
 //                     fontSize: 16,
 //                   ),

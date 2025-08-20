@@ -193,7 +193,7 @@ class PrintInvoiceMainScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(

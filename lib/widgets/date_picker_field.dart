@@ -3,8 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:myapp/theme/app_theme.dart'; // Adjust path if needed
 import 'date_picker_helper.dart'; // Import the helper
 
-
-
 class DatePickerField extends StatelessWidget {
   final String labelText;
   final DateTime? selectedDate;
@@ -40,9 +38,9 @@ class DatePickerField extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
+              border: Border.all(color: AppColors.border),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -52,9 +50,8 @@ class DatePickerField extends StatelessWidget {
                       ? 'Select Date'
                       : DateFormat('dd MMM yyyy').format(selectedDate!),
                   style: TextStyle(
-                    color: selectedDate == null
-                        ? Colors.grey.shade600
-                        : Colors.black,
+                    color:
+                        selectedDate == null ? AppColors.border : Colors.black,
                     fontSize: 16,
                   ),
                 ),

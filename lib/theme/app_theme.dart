@@ -13,6 +13,11 @@ class AppColors {
   static const Color textFaded = Colors.black54;
   static const Color textSecondary = Colors.black54;
 
+  // Border Colors
+  
+  static const Color border = Color(0xFFE0E0E0); // Light Gray
+  static const Color borderDark = Color(0xFFBDBDBD); // Dark Gray
+
   // Button/Snack Colors
   static const Color success = Color(0xFF2E7D32); // Dark Green
   static const Color danger = Color(0xFFC62828); // Dark Red

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/theme/app_theme.dart';
 
 class SelectionSheet<T> extends StatelessWidget {
   final String title;
   final List<T> items;
   final Widget Function(T item) itemBuilder;
   final Widget headerBuilder;
-  final TextEditingController searchController; // MODIFIED: Added search controller
+  final TextEditingController
+  searchController; // MODIFIED: Added search controller
 
   const SelectionSheet({
     super.key,
@@ -25,7 +27,7 @@ class SelectionSheet<T> extends StatelessWidget {
       builder: (context, scrollController) {
         return Container(
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
@@ -43,12 +45,15 @@ class SelectionSheet<T> extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextField(
-                        controller: searchController, // MODIFIED: Linked controller
+                        controller:
+                            searchController, // MODIFIED: Linked controller
                         decoration: InputDecoration(
                           hintText: 'Search',
                           prefixIcon: const Icon(Icons.search),
                           isDense: true,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
                       ),
                     ),
@@ -57,7 +62,10 @@ class SelectionSheet<T> extends StatelessWidget {
               ),
               // Header for the list
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
                 child: headerBuilder,
               ),
               const Divider(height: 1),
@@ -66,7 +74,8 @@ class SelectionSheet<T> extends StatelessWidget {
                 child: ListView.separated(
                   controller: scrollController,
                   itemCount: items.length,
-                  separatorBuilder: (context, index) => const Divider(height: 1),
+                  separatorBuilder:
+                      (context, index) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     return itemBuilder(items[index]);
                   },
@@ -109,7 +118,7 @@ class SelectionSheet<T> extends StatelessWidget {
 //       builder: (context, scrollController) {
 //         return Container(
 //           decoration: const BoxDecoration(
-//             color: Colors.white,
+//             color: AppColors.white,
 //             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
 //           ),
 //           child: Column(

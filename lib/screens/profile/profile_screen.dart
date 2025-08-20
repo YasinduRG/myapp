@@ -30,7 +30,7 @@ class ProfileScreen extends ConsumerWidget {
           const CircleAvatar(
             radius: 60,
             backgroundColor: AppColors.primary,
-            child: Icon(Icons.person, size: 80, color: Colors.white),
+            child: Icon(Icons.person, size: 80, color: AppColors.white),
           ),
           const SizedBox(height: 20),
           Text(
@@ -96,7 +96,7 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
     );
-  } 
+  }
 }
 
 // class ProfileScreen extends ConsumerWidget {
@@ -121,7 +121,7 @@ class ProfileScreen extends ConsumerWidget {
 //             const CircleAvatar(
 //               radius: 60,
 //               backgroundColor: AppColors.primary,
-//               child: Icon(Icons.person, size: 80, color: Colors.white),
+//               child: Icon(Icons.person, size: 80, color: AppColors.white),
 //             ),
 //             const SizedBox(height: 20),
 
