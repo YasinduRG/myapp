@@ -128,6 +128,7 @@ class _FilterableListViewState<T> extends State<FilterableListView<T>> {
                 child: Text(
                   column.label,
                   style: const TextStyle(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
               );
             }).toList(),

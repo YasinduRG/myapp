@@ -4,6 +4,7 @@ import 'package:myapp/models/credit_note_model.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/widgets/action_button.dart';
 import 'package:myapp/widgets/app_table.dart';
+import 'package:myapp/widgets/text_form_field.dart';
 
 class AddCreditNotesView extends StatefulWidget {
   // Callback to pass the final list of notes up to the parent
@@ -77,23 +78,34 @@ class _AddCreditNotesViewState extends State<AddCreditNotesView> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
+                  AppTextField(
+          controller: _crnController,
+          labelText: 'CRN No',
+        ),
+        const SizedBox(height: 16),
+
+        AppTextField(
+          controller: _amountController,
+          labelText: 'CRN Amount',
+          keyboardType: TextInputType.number,
+        ),
           // Input Fields
-          TextField(
-            controller: _crnController,
-            decoration: const InputDecoration(
-              labelText: 'CRN No',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _amountController,
-            decoration: const InputDecoration(
-              labelText: 'CRN Amount',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.number,
-          ),
+          // TextField(
+          //   controller: _crnController,
+          //   decoration: const InputDecoration(
+          //     labelText: 'CRN No',
+          //     border: OutlineInputBorder(),
+          //   ),
+          // ),
+          // const SizedBox(height: 16),
+          // TextField(
+          //   controller: _amountController,
+          //   decoration: const InputDecoration(
+          //     labelText: 'CRN Amount',
+          //     border: OutlineInputBorder(),
+          //   ),
+          //   keyboardType: TextInputType.number,
+          // ),
           const SizedBox(height: 24),
 
           // Add Button
@@ -144,8 +156,6 @@ class _AddCreditNotesViewState extends State<AddCreditNotesView> {
             ),
           ),
           const SizedBox(height: 16),
-
-          // Submit Button
           ActionButton(
             label: 'Submit',
             onPressed: () => widget.onSubmit(_addedCreditNotes),

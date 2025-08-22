@@ -6,6 +6,7 @@ import 'package:myapp/widgets/app_footer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // 1. Import Riverpod
 import 'package:myapp/providers/auth_provider.dart'; // 2. Import the new Riverpod provider
 import 'package:myapp/widgets/action_button.dart';
+import 'package:myapp/widgets/text_form_field.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -119,15 +120,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                     ),
-                  _buildTextField(
+                  // _buildTextField(
+                  //   controller: _usernameController,
+                  //   hintText: 'Username',
+                  // ),
+                  // const SizedBox(height: 20),
+                  // _buildTextField(
+                  //   controller: _passwordController,
+                  //   hintText: 'Password',
+                  //   obscureText: true,
+                  // ),
+                                    // Replace _buildTextField with the newly configured AppTextField
+                  AppTextField(
                     controller: _usernameController,
                     hintText: 'Username',
+                    hideBorder: true, // Use the new "no border" style
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                   ),
                   const SizedBox(height: 20),
-                  _buildTextField(
+                  AppTextField(
                     controller: _passwordController,
                     hintText: 'Password',
                     obscureText: true,
+                    hideBorder: true, // Use the new "no border" style
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                   ),
                   const SizedBox(height: 20),
                   Align(
@@ -144,9 +160,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 30),
-
-                  // Show a loading indicator if loading, otherwise show the button.
-                  // 10. Use authState to check the loading status.
                   authState.isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : ActionButton(
@@ -155,12 +168,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         label: 'Login',
                         onPressed: _handleLogin,
                       ),
-                  // : _buildActionButton(
-                  //     icon: Icons.check_circle_outline,
-                  //     label: 'Login',
-                  //     color: AppColors.primary,
-                  //     onPressed: _handleLogin,
-                  //   ),
                   const SizedBox(height: 16),
                   ActionButton(
                     // Replaced here
@@ -169,17 +176,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     color: AppColors.success,
                     onPressed: _handleClear,
                   ),
-                  // _buildActionButton(
-                  //   icon: Icons.refresh,
-                  //   label: 'Refresh',
-                  //   color: AppColors.success,
-                  //   onPressed: () {
-                  //     _usernameController.clear();
-                  //     _passwordController.clear();
-                  //     // You can also add a call to clear the error message if you want
-                  //     // ref.read(authProvider.notifier).clearError(); // (This would be a new method in your notifier)
-                  //   },
-                  // ),
                   const SizedBox(height: 16),
                   ActionButton(
                     // Replaced here
@@ -188,15 +184,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     color: AppColors.danger,
                     onPressed: () {},
                   ),
-
-                  // _buildActionButton(
-                  //   icon: Icons.cancel_outlined,
-                  //   label: 'Cancel',
-                  //   color: AppColors.danger,
-                  //   onPressed: () {},
-                  // ),
                   const SizedBox(height: 30),
-
                   const AppFooter(),
                 ],
               ),
@@ -207,28 +195,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  // Helper method for text fields (no changes needed)
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hintText,
-    bool obscureText = false,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        hintText: hintText,
-        filled: true,
-        fillColor: AppColors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 20,
-        ),
-      ),
-    );
-  }
+  // // Helper method for text fields (no changes needed)
+  // Widget _buildTextField({
+  //   required TextEditingController controller,
+  //   required String hintText,
+  //   bool obscureText = false,
+  // }) {
+  //   return TextField(
+  //     controller: controller,
+  //     obscureText: obscureText,
+  //     decoration: InputDecoration(
+  //       hintText: hintText,
+  //       filled: true,
+  //       fillColor: AppColors.white,
+  //       border: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(12),
+  //         borderSide: BorderSide.none,
+  //       ),
+  //       contentPadding: const EdgeInsets.symmetric(
+  //         vertical: 16,
+  //         horizontal: 20,
+  //       ),
+  //     ),
+  //   );
+  // }
 }

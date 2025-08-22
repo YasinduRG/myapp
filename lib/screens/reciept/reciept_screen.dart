@@ -6,7 +6,8 @@ import 'package:myapp/widgets/add_credit_note_view.dart';
 //import 'package:myapp/views/cheque_details_view.dart'; // Adjust path
 import 'package:myapp/widgets/app_page.dart';
 import 'package:myapp/util/snack_bar.dart';
-import 'package:myapp/widgets/date_picker_field.dart'; // Adjust path
+import 'package:myapp/widgets/date_picker_field.dart';
+import 'package:myapp/widgets/text_form_field.dart'; // Adjust path
 
 class RecieptScreen extends StatefulWidget {
   const RecieptScreen({super.key});
@@ -57,17 +58,15 @@ class _RecieptScreenState extends State<RecieptScreen> {
     });
   }
 
-  void _onback(){
+  void _onback() {
     if (_currentStep > 0) {
-          setState(() {
-            _currentStep--; // Go back to the previous step
-          });
-        } else {
-          Navigator.of(context).pop(); // Exit the page
+      setState(() {
+        _currentStep--; // Go back to the previous step
+      });
+    } else {
+      Navigator.of(context).pop(); // Exit the page
     }
   }
-
-
 
   // void _addCreditNotes(List<CreditNote> notes) {
   //   // Save CREDIT NOTES HERE LATER
@@ -80,23 +79,23 @@ class _RecieptScreenState extends State<RecieptScreen> {
   Widget build(BuildContext context) {
     return AppPage(
       title: _getCurrentTitle(),
-      onBack:_onback,
+      onBack: _onback,
       child: _buildCurrentView(),
     );
   }
 
-String _getCurrentTitle() {
-  switch (_currentStep) {
-    case 0:
-      return 'Cheque Deposit Details'; 
-    case 1:
-      return 'Add Credit Notes';       
-    case 2:
-      return 'Success';                
-    default:
-      return 'Error';         
+  String _getCurrentTitle() {
+    switch (_currentStep) {
+      case 0:
+        return 'Cheque Deposit Details';
+      case 1:
+        return 'Add Credit Notes';
+      case 2:
+        return 'Success';
+      default:
+        return 'Error';
+    }
   }
-}
 
   Widget _buildCurrentView() {
     switch (_currentStep) {
@@ -163,11 +162,13 @@ class _RecieptDetailsViewState extends State<RecieptDetailsView> {
   }
 
   void _validateForm() {
+    // This logic checks if all required fields are filled
     final isValid =
         _chequeNoController.text.isNotEmpty &&
         _amountController.text.isNotEmpty &&
         _selectedChequeDate != null;
 
+    // setState is only called if the validity state changes, which is efficient
     if (isValid != _isFormValid) {
       setState(() {
         _isFormValid = isValid;
@@ -191,17 +192,18 @@ class _RecieptDetailsViewState extends State<RecieptDetailsView> {
           children: [
             ActionButton(
               label: 'Add Credit Note',
-              icon: Icons.add_card, // Example icon
+              icon: Icons.add_card,
               onPressed: widget.addCreditnote,
               color: AppColors.success,
             ),
             const SizedBox(height: 16),
-            _buildTextField(
+            // REPLACEMENT: Using the CustomTextField widget
+            AppTextField(
               controller: _chequeNoController,
               labelText: 'Cheque No.',
             ),
             const SizedBox(height: 16),
-            _buildTextField(labelText: 'Account No.'), // Dummy for now
+            const AppTextField(labelText: 'Account No.'), // Dummy for now
             const SizedBox(height: 16),
             DatePickerField(
               labelText: 'Cheque Date',
@@ -214,13 +216,14 @@ class _RecieptDetailsViewState extends State<RecieptDetailsView> {
               },
             ),
             const SizedBox(height: 16),
-            _buildTextField(labelText: 'To Be Deposited'), // Dummy
+            const AppTextField(labelText: 'To Be Deposited'), // Dummy
             const SizedBox(height: 16),
-            _buildTextField(labelText: 'Bank'), // Dummy
+            const AppTextField(labelText: 'Bank'), // Dummy
             const SizedBox(height: 16),
-            _buildTextField(labelText: 'Branch'), // Dummy
+            const AppTextField(labelText: 'Branch'), // Dummy
             const SizedBox(height: 16),
-            _buildTextField(
+            // REPLACEMENT: Using the CustomTextField widget with keyboardType
+            AppTextField(
               controller: _amountController,
               labelText: 'Amount',
               keyboardType: TextInputType.number,
@@ -230,7 +233,8 @@ class _RecieptDetailsViewState extends State<RecieptDetailsView> {
               label: 'Submit',
               icon: Icons.check_circle_outline,
               onPressed: widget.onSubmit,
-              disabled: !_isFormValid,
+              disabled:
+                  !_isFormValid, // Button is disabled based on form validity
             ),
           ],
         ),
@@ -238,28 +242,136 @@ class _RecieptDetailsViewState extends State<RecieptDetailsView> {
     );
   }
 
-  // Helper for text fields to reduce repetition
-  Widget _buildTextField({
-    TextEditingController? controller,
-    required String labelText,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: labelText,
-        filled: true,
-        fillColor: AppColors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-      ),
-    );
-  }
+  // The _buildTextField function is no longer needed and has been removed.
 }
+
+// class RecieptDetailsView extends StatefulWidget {
+//   final VoidCallback onSubmit;
+//   final VoidCallback addCreditnote;
+
+//   const RecieptDetailsView({
+//     super.key,
+//     required this.onSubmit,
+//     required this.addCreditnote,
+//   });
+
+//   @override
+//   State<RecieptDetailsView> createState() => _RecieptDetailsViewState();
+// }
+
+// class _RecieptDetailsViewState extends State<RecieptDetailsView> {
+//   final _chequeNoController = TextEditingController();
+//   final _amountController = TextEditingController();
+//   DateTime? _selectedChequeDate;
+
+//   bool _isFormValid = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Add listeners to check form validity on every change
+//     _chequeNoController.addListener(_validateForm);
+//     _amountController.addListener(_validateForm);
+//   }
+
+//   void _validateForm() {
+//     final isValid =
+//         _chequeNoController.text.isNotEmpty &&
+//         _amountController.text.isNotEmpty &&
+//         _selectedChequeDate != null;
+
+//     if (isValid != _isFormValid) {
+//       setState(() {
+//         _isFormValid = isValid;
+//       });
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _chequeNoController.dispose();
+//     _amountController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SingleChildScrollView(
+//       child: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           children: [
+//             ActionButton(
+//               label: 'Add Credit Note',
+//               icon: Icons.add_card, // Example icon
+//               onPressed: widget.addCreditnote,
+//               color: AppColors.success,
+//             ),
+//             const SizedBox(height: 16),
+//             _buildTextField(
+//               controller: _chequeNoController,
+//               labelText: 'Cheque No.',
+//             ),
+//             const SizedBox(height: 16),
+//             _buildTextField(labelText: 'Account No.'), // Dummy for now
+//             const SizedBox(height: 16),
+//             DatePickerField(
+//               labelText: 'Cheque Date',
+//               selectedDate: _selectedChequeDate,
+//               onDateSelected: (date) {
+//                 setState(() {
+//                   _selectedChequeDate = date;
+//                   _validateForm(); // Validate after date selection
+//                 });
+//               },
+//             ),
+//             const SizedBox(height: 16),
+//             _buildTextField(labelText: 'To Be Deposited'), // Dummy
+//             const SizedBox(height: 16),
+//             _buildTextField(labelText: 'Bank'), // Dummy
+//             const SizedBox(height: 16),
+//             _buildTextField(labelText: 'Branch'), // Dummy
+//             const SizedBox(height: 16),
+//             _buildTextField(
+//               controller: _amountController,
+//               labelText: 'Amount',
+//               keyboardType: TextInputType.number,
+//             ),
+//             const SizedBox(height: 40),
+//             ActionButton(
+//               label: 'Submit',
+//               icon: Icons.check_circle_outline,
+//               onPressed: widget.onSubmit,
+//               disabled: !_isFormValid,
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   // Helper for text fields to reduce repetition
+//   Widget _buildTextField({
+//     TextEditingController? controller,
+//     required String labelText,
+//     TextInputType keyboardType = TextInputType.text,
+//   }) {
+//     return TextField(
+//       controller: controller,
+//       keyboardType: keyboardType,
+//       decoration: InputDecoration(
+//         labelText: labelText,
+//         filled: true,
+//         fillColor: AppColors.white,
+//         border: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(12),
+//           borderSide: BorderSide(color: AppColors.border),
+//         ),
+//         enabledBorder: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(12),
+//           borderSide: BorderSide(color: AppColors.border),
+//         ),
+//       ),
+//     );
+//   }
+// }

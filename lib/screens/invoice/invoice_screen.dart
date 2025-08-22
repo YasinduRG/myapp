@@ -237,19 +237,57 @@ class _CreateInvoiceViewState extends State<CreateInvoiceView> {
       Part(id: 'p2', partNo: 'AC2000123231', requestQty: 5, price: 5500.50),
       Part(id: 'p3', partNo: 'AC2000123232', requestQty: 1, price: 8000.00),
       Part(id: 'p4', partNo: 'AC2000123342', requestQty: 1, price: 1000.00),
-      Part(id: 'p5', partNo: 'AC2000123932', requestQty: 1, price: 3000.00),
+      Part(id: 'p5', partNo: 'AC2000123932', requestQty: 6, price: 3000.00),
+      Part(id: 'p6', partNo: 'AC2000123937', requestQty: 6, price: 300.00),
     ];
   }
 
+  Future<void> _showQuantityDialog(Part part) async {
+    // Use your existing, separate QuantityEditDialog class
+    final newQuantity = await showDialog<int>(
+      context: context,
+      builder:
+          (context) => QuantityEditDialog(
+            initialQuantity: part.receivedQty,
+            title: 'Delivered Quantity',
+            maxQuantity: part.requestQty, // Or any custom title
+          ),
+    );
+
+    // If the dialog returned a new value, update the state.
+    // The 'mounted' check is a best practice for async operations in stateful widgets.
+    if (newQuantity != null && mounted) {
+      setState(() {
+        part.receivedQty = newQuantity;
+      });
+    }
+  }
   // Toggles the selection of a part.
-  void _togglePartSelection(String partId) {
+  // void _togglePartSelection(String partId) {
+  //   setState(() {
+  //     final part = _parts.firstWhere((p) => p.id == partId);
+  //     part.isSelected = !part.isSelected;
+  //     if (!part.isSelected) {
+  //       part.receivedQty = 0;
+  //     }
+  //   });
+  // }
+
+  Future<void> _togglePartSelection(String partId) async {
+    final part = _parts.firstWhere((p) => p.id == partId);
+
     setState(() {
-      final part = _parts.firstWhere((p) => p.id == partId);
       part.isSelected = !part.isSelected;
       if (!part.isSelected) {
         part.receivedQty = 0;
+      } else {
+        // Selected
+        part.receivedQty = 1;
       }
     });
+    if (part.isSelected) {
+      await _showQuantityDialog(part);
+    }
   }
 
   // ---------------------
@@ -327,6 +365,7 @@ class _CreateInvoiceViewState extends State<CreateInvoiceView> {
                             value: part.receivedQty,
                             enabled: part.isSelected,
                             dialogTitle: 'Delivered Quantity',
+                            maxQuantity: part.requestQty,
                             onChanged: (newValue) {
                               setState(() => part.receivedQty = newValue);
                             },

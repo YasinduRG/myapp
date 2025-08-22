@@ -7,6 +7,8 @@ class QuantitySelector extends StatelessWidget {
   final ValueChanged<int>? onChanged;
   final bool enabled;
   final String dialogTitle;
+  final int? maxQuantity; // <-- ADD THIS
+
 
   const QuantitySelector({
     super.key,
@@ -14,7 +16,9 @@ class QuantitySelector extends StatelessWidget {
     this.onChanged,
     this.enabled = true,
     this.dialogTitle = 'Update Quantity', // Default title
+    this.maxQuantity, 
   });
+
 
   // This internal method handles the logic of showing the dialog.
   Future<void> _showEditDialog(BuildContext context) async {
@@ -24,7 +28,7 @@ class QuantitySelector extends StatelessWidget {
       context: context,
       builder:
           (context) =>
-              QuantityEditDialog(initialQuantity: value, title: dialogTitle),
+              QuantityEditDialog(initialQuantity: value, title: dialogTitle,maxQuantity: maxQuantity),
     );
     if (newValue != null) {
       onChanged!(newValue);
@@ -90,11 +94,13 @@ class QuantityStepperDisplay extends StatelessWidget {
 class QuantityEditDialog extends StatefulWidget {
   final int initialQuantity;
   final String title;
+  final int? maxQuantity; // <-- ADD THIS: Optional maximum value
 
   const QuantityEditDialog({
     super.key,
     required this.initialQuantity,
     required this.title,
+    this.maxQuantity
   });
 
   @override
@@ -107,39 +113,54 @@ class _QuantityEditDialogState extends State<QuantityEditDialog> {
   @override
   void initState() {
     super.initState();
-    _currentQuantity = widget.initialQuantity;
+  //  _currentQuantity = widget.initialQuantity;
+
+    if (widget.initialQuantity < 1) {
+      _currentQuantity = 1;
+    } else {
+      _currentQuantity = widget.initialQuantity;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+        // Determine if the increment/decrement buttons should be disabled
+    final canDecrement = _currentQuantity > 1;
+    final canIncrement = widget.maxQuantity == null || _currentQuantity < widget.maxQuantity!;
+    
     return AlertDialog(
       title: Text(widget.title),
       content: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.remove_circle,
-              color: AppColors.danger,
+              color: canDecrement ? AppColors.danger : AppColors.disabled,
               size: 30,
             ),
-            onPressed: () {
-              if (_currentQuantity > 0) {
-                setState(() => _currentQuantity--);
-              }
-            },
+            onPressed: canDecrement
+                ? () => setState(() => _currentQuantity--)
+                : null,
+            // onPressed: () {
+            //   if (_currentQuantity > 0) {
+            //     setState(() => _currentQuantity--);
+            //   }
+            // },
           ),
           Text(
             _currentQuantity.toString(),
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.add_circle,
-              color: AppColors.primary,
+              color: canIncrement ? AppColors.primary : Colors.grey,
               size: 30,
             ),
-            onPressed: () => setState(() => _currentQuantity++),
+              onPressed: canIncrement
+                ? () => setState(() => _currentQuantity++)
+                : null,
           ),
         ],
       ),
