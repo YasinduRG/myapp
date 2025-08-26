@@ -114,6 +114,7 @@ class _AuthenticateDealerViewState extends State<AuthenticateDealerView> {
               keyboardType: TextInputType.number,
               isPin: true,
             ),
+            
             const Spacer(),
             ActionButton(
               label: 'Agree',

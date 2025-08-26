@@ -30,7 +30,7 @@ Future<void> main() async {
 
   // Initialize our notification service.
   // This will handle Firebase setup and topic subscription.
-  // await NotificationService().initialize(); ENABLE THIS LATER FIBASE CLOUD NOTIFICATION
+  // await NotificationService().initialize(); 
 
   // Initialize our notification service once when the app starts
   //await NotificationService().init();

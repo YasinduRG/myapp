@@ -6,12 +6,22 @@ class Dealer {
   final String city;
 
   Dealer({
-    required this.name,
-    required this.surname,
-    required this.accountCode,
-    required this.address,
-    required this.city,
+  required this.name,
+  required this.surname,
+  required this.accountCode,
+  required this.address,
+  required this.city,
   });
 
-  
+  Map<String, dynamic> toMap() {
+    return {
+    'name': name,
+    'accountCode': accountCode,
+    'surname': surname,
+    'address': address,
+    'city': city,
+    };
+    }
+
+                                                                                  
 }

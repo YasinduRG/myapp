@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/> 
     <application
         android:label="Invoice System"
         android:name="${applicationName}"
@@ -64,7 +65,7 @@
     </queries>
 
      <!-- Request legacy Bluetooth permissions on older devices. -->
-    <uses-permission android:name="android.permission.BLUETOETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOTOOTH" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
 
     <!-- Request new Bluetooth permissions on newer devices. -->

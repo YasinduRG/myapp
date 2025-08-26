@@ -8,7 +8,8 @@ plugins {
 android {
     namespace = "com.example.myapp"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973" // <-- TO THIS VALUE
 
     compileOptions {
         // --- CHANGE: Correct Kotlin DSL syntax ---
