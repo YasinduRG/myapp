@@ -1,4 +1,7 @@
-class Dealer {
+
+import 'package:myapp/contracts/mappable.dart';
+
+class Dealer implements Mappable {
   final String name;
   final String surname;
   final String accountCode;
@@ -13,6 +16,7 @@ class Dealer {
   required this.city,
   });
 
+  @override
   Map<String, dynamic> toMap() {
     return {
     'name': name,

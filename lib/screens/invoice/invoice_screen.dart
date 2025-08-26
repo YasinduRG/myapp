@@ -8,11 +8,11 @@ import 'package:myapp/widgets/app_page.dart';
 import 'package:myapp/widgets/app_table.dart';
 import 'package:myapp/widgets/dealer_info_card.dart';
 import 'package:myapp/widgets/quantity_selector.dart';
-import 'package:myapp/widgets/select_dealer_view.dart';
-import 'package:myapp/widgets/select_tin_view.dart';
+import 'package:myapp/views/select_dealer_view.dart';
+import 'package:myapp/views/select_tin_view.dart';
 import 'package:myapp/models/tin_model.dart';
 import 'package:myapp/models/dealer_model.dart';
-import 'package:myapp/widgets/auth_dealer_view.dart';
+import 'package:myapp/views/auth_dealer_view.dart';
 import 'package:myapp/widgets/tin_info_card.dart';
 
 class InvoiceScreen extends StatefulWidget {
@@ -103,7 +103,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   void _saveinvoice() {
     setState(() {
-      _currentStep = 0; // Move to the initial page
+      _currentStep = 2; // Move to the initial page
     });
     showSnackBar(
       context: context,

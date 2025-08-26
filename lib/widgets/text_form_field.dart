@@ -119,7 +119,6 @@ class AppTextField extends StatelessWidget {
     this.validator,
   });
 
-  // ... (internalValidator logic remains the same)
   String? _internalValidator(String? value) {
     if (isPin) {
       if (value == null || value.isEmpty) return 'PIN cannot be empty';
@@ -144,7 +143,7 @@ class AppTextField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
-        labelStyle: const TextStyle(color: AppColors.border),
+        labelStyle: const TextStyle(color: AppColors.borderDark),
         filled: true,
         fillColor: AppColors.white,
         contentPadding: contentPadding,
@@ -154,7 +153,7 @@ class AppTextField extends StatelessWidget {
           borderSide:
               hideBorder
                   ? BorderSide.none
-                  : const BorderSide(color: AppColors.border),
+                  : const BorderSide(color: AppColors.borderDark),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -180,9 +179,15 @@ class AppTextField extends StatelessWidget {
 
         // --- End of Conditional Border Logic ---
         floatingLabelStyle: WidgetStateTextStyle.resolveWith((states) {
-          if (states.contains(WidgetState.error))
+          if (states.contains(MaterialState.error)) {
             return const TextStyle(color: AppColors.danger);
-          return const TextStyle(color: AppColors.primary);
+          }
+          // Use primary color when the field is focused.
+          if (states.contains(MaterialState.focused)) {
+            return const TextStyle(color: AppColors.primary);
+          }
+          // Use border color when unfocused (but has content, so it's floating).
+          return const TextStyle(color: AppColors.borderDark);
         }),
         errorStyle: const TextStyle(color: AppColors.danger),
       ),

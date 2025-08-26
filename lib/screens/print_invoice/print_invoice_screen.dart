@@ -4,7 +4,7 @@ import 'package:myapp/models/invoic_model.dart';
 import 'package:myapp/models/dealer_model.dart';
 import 'package:myapp/util/snack_bar.dart';
 import 'package:myapp/widgets/action_button.dart';
-import 'package:myapp/widgets/auth_dealer_view.dart';
+import 'package:myapp/views/auth_dealer_view.dart';
 import 'package:myapp/widgets/app_page.dart';
 
 // --- MAIN WIDGET: Manages the flow state ---

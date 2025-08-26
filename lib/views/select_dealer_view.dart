@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:myapp/models/dealer_model.dart';
 import 'package:myapp/widgets/action_button.dart';
 import 'package:myapp/widgets/app_help_text_field.dart';
-//import 'package:myapp/widgets/custom_selection_form_field.dart';
-//import 'package:myapp/widgets/selection_sheet.dart';
+
+
+
+
 
 class SelectDealerView extends StatefulWidget {
   final List<Dealer> dealers;
@@ -55,27 +57,24 @@ class _SelectDealerViewState extends State<SelectDealerView> {
             controller: _dealerController,
             labelText: 'Select Dealer',
             selectionSheetTitle: 'Select a Dealer',
+            initialValue: widget.selectedDealer,
             items: widget.dealers,
             onSelected: widget.onDealerSelected,
-            displayString: (dealer) => dealer.name,
-
-            // 2. Use the new callback to update our simple boolean state.
+            //displayString: (dealer) => dealer.name,
             onCommitStateChanged: (isCommitted) {
               setState(() {
                 _isDealerSelectionCommitted = isCommitted;
               });
             },
-
-            toMapConverter: (dealer) => dealer.toMap(),
             displayNames: const ['Account Code', 'Name', 'Address', 'City'],
             valueFields: const ['accountCode', 'name', 'address', 'city'],
+            mainField: 'name',
           ),
           const Spacer(),
           ActionButton(
             icon: Icons.check_circle_outline,
             label: 'Submit',
             onPressed: widget.onSubmit,
-            // 3. The button's state is now tied directly to our simple boolean.
             disabled: !_isDealerSelectionCommitted,
           ),
         ],
