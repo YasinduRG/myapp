@@ -74,7 +74,9 @@ class MainMenuScreen extends ConsumerWidget {
                     _MenuCard(
                       icon: Icons.route,
                       label: 'Route Selection',
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.region);
+                      },
                     ),
                     _MenuCard(
                       icon: Icons.replay_circle_filled,

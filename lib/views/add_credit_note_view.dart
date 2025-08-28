@@ -121,15 +121,8 @@ class _AddCreditNotesViewState extends State<AddCreditNotesView> {
           Expanded(
             child: FilterableListView<CreditNote>(
               items: _addedCreditNotes,
-              searchHintText: 'Search...',
-              filterLogic: (allItems, query) {
-                if (query.isEmpty) return allItems;
-                return allItems.where((note) {
-                  final crnLower = note.crnNumber.toLowerCase();
-                  final queryLower = query.toLowerCase();
-                  return crnLower.contains(queryLower);
-                }).toList();
-              },
+              searchHintText: 'Search by Credit Number',
+              filterableFields: ['crnNumber'],
               columns: [
                 DynamicColumn<CreditNote>(
                   label: 'Credit Note No.',

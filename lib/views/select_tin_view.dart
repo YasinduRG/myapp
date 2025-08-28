@@ -10,14 +10,14 @@ import 'package:myapp/widgets/dealer_info_card.dart';
 
 class SelectTinNumberView extends StatefulWidget {
   final Dealer dealer;
-  final List<TinData> tins;
+  //final List<TinData> tins;
   final Function(TinData) onTinNumberSelected;
   final VoidCallback onSubmit;
   final TinData? selectedTin;
 
   const SelectTinNumberView({
     super.key,
-    required this.tins,
+    //required this.tins,
     required this.onTinNumberSelected,
     required this.onSubmit,
     required this.dealer,
@@ -66,7 +66,7 @@ class _SelectTinNumberViewState extends State<SelectTinNumberView> {
             labelText: 'Select TIN Number',
             selectionSheetTitle: 'Select a TIN Number',
             initialValue: widget.selectedTin,
-            items: widget.tins,
+            //items: widget.tins,
             onSelected: widget.onTinNumberSelected,
            // displayString: (tin) => tin.tinNumber,
             onCommitStateChanged: (isCommitted) {
@@ -77,6 +77,7 @@ class _SelectTinNumberViewState extends State<SelectTinNumberView> {
             displayNames: const ['TIN Number', 'Total Value'],
             valueFields: const ['tinNumber', 'totalValue'],
             mainField: 'tinNumber',
+            dataUrl: 'api/tins/list',
           ),
 
           const Spacer(),

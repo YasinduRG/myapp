@@ -104,6 +104,7 @@ class AppTextField extends StatelessWidget {
   final bool hideBorder;
   final EdgeInsetsGeometry? contentPadding;
   final String? Function(String?)? validator;
+  final void Function(String)? onFieldSubmitted; // 1. ADD THIS LINE
 
   const AppTextField({
     super.key,
@@ -117,6 +118,7 @@ class AppTextField extends StatelessWidget {
         false, // NEW: Default to false to not break existing fields
     this.contentPadding, // NEW
     this.validator,
+    this.onFieldSubmitted
   });
 
   String? _internalValidator(String? value) {
@@ -139,6 +141,8 @@ class AppTextField extends StatelessWidget {
       controller: controller,
       keyboardType: effectiveKeyboardType,
       obscureText: shouldObscure,
+      onFieldSubmitted: onFieldSubmitted, // 3. PASS THE CALLBACK HERE
+      textInputAction: TextInputAction.done, // 4. SET THE KEYBOARD ACTION
       style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         labelText: labelText,

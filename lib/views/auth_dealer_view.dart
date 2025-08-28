@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/models/dealer_model.dart';
 import 'package:myapp/widgets/action_button.dart';
 import 'package:myapp/widgets/text_form_field.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class AuthenticateDealerView extends StatefulWidget {
   final Dealer dealer;
@@ -91,30 +92,26 @@ class _AuthenticateDealerViewState extends State<AuthenticateDealerView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Authenticating: ${widget.dealer.name}', // Use 'widget.' to access properties
+            // Text(
+            //   'Authenticating: ${widget.dealer.name}', // Use 'widget.' to access properties
+            //   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // ),
+            // const SizedBox(height: 20),
+            AutoSizeText(
+              'Authenticating: ${widget.dealer.name}',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              maxLines: 1,
             ),
             const SizedBox(height: 20),
 
-            // TextField(
-            //   controller: _pinController, // 7. Assign the controller to the TextField
-            //   decoration: InputDecoration(
-            //     labelText: 'PIN',
-            //     border: OutlineInputBorder(
-            //       borderRadius: BorderRadius.circular(8),
-            //     ),
-            //   ),
-            //   keyboardType: TextInputType.number,
-            //   obscureText: true,
-            // ),
             AppTextField(
               controller: _pinController,
               labelText: 'PIN',
               keyboardType: TextInputType.number,
               isPin: true,
+              onFieldSubmitted: (_) => _submit(),
             ),
-            
+
             const Spacer(),
             ActionButton(
               label: 'Agree',

@@ -25,6 +25,7 @@ class _SetupPrintScreenState extends State<SetupPrintScreen> {
   bool _isSearching = false;
 
   BluetoothDevice? _connectedDevice;
+  // ignore: unused_field
   StreamSubscription<BluetoothConnectionState>? _connectionStateSubscription;
   // This characteristic is the "pipe" we will write to
   BluetoothCharacteristic? _targetCharacteristic;

@@ -11,4 +11,5 @@ class AppRoutes {
   static const String reciept = '/reciept';
   static const String returns = '/returns';
   static const String reprint = '/reprint';
+  static const String region = '/region';
 }

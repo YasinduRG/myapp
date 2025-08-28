@@ -6,6 +6,7 @@ import 'package:myapp/screens/profile/profile_screen.dart';
 import 'package:myapp/screens/reciept/reciept_screen.dart';
 import 'package:myapp/screens/reprint/reprint_screen.dart';
 import 'package:myapp/screens/returns/return_screen.dart';
+import 'package:myapp/screens/route_selection/route_selection.dart';
 import 'package:myapp/screens/setup_print/setup_print_screen.dart';
 import 'package:myapp/app_routes.dart';
 import 'package:myapp/screens/invoice/invoice_screen.dart';
@@ -30,7 +31,7 @@ Future<void> main() async {
 
   // Initialize our notification service.
   // This will handle Firebase setup and topic subscription.
-  // await NotificationService().initialize(); 
+  // await NotificationService().initialize();
 
   // Initialize our notification service once when the app starts
   //await NotificationService().init();
@@ -82,6 +83,7 @@ class MyApp extends ConsumerWidget {
         AppRoutes.reciept: (context) => const RecieptScreen(),
         AppRoutes.returns: (context) => const ReturnScreen(),
         AppRoutes.reprint: (context) => const ReprintScreen(),
+        AppRoutes.region: (context) => const RouteSelectionScreen(),
         // Example for a future screen:
         // AppRoutes.invoice: (context) => const InvoiceScreen(),
       },

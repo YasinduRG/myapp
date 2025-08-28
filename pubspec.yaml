@@ -41,6 +41,7 @@ dependencies:
   timezone: ^0.10.1
   intl: ^0.18.1
   esc_pos_utils_plus: ^2.0.2 # For thermal printers
+  auto_size_text: ^3.0.0 #for reduce size of texts when nessary
 
 dev_dependencies:
   flutter_test:

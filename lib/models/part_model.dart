@@ -1,4 +1,5 @@
-class Part {
+import 'package:myapp/contracts/mappable.dart';
+class Part implements Mappable {
   final String id;
   final String partNo;
   final int requestQty;
@@ -16,4 +17,18 @@ class Part {
     this.isSelected = false, // Defaults to not selected
     this.receivedQty = 0,    // Defaults to 0 received
   });
+  
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id':id,
+      'partNo': partNo, 
+      'requestQty': requestQty,
+      'price': price,
+      'receivedQty': receivedQty,
+      };
+  }
 }
+
+
+

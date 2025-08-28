@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/models/credit_note_model.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/widgets/action_button.dart';
-import 'package:myapp/widgets/add_credit_note_view.dart';
+import 'package:myapp/views/add_credit_note_view.dart';
 //import 'package:myapp/views/cheque_details_view.dart'; // Adjust path
 import 'package:myapp/widgets/app_page.dart';
 import 'package:myapp/util/snack_bar.dart';

@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/dealer_model.dart';
+import 'package:myapp/models/region_model.dart';
 import 'package:myapp/widgets/action_button.dart';
 import 'package:myapp/widgets/app_help_text_field.dart';
 
-
-
-
-
 class SelectDealerView extends StatefulWidget {
-  final List<Dealer> dealers;
+  //final List<Dealer> dealers;
   final Function(Dealer) onDealerSelected;
   final VoidCallback onSubmit;
   final Dealer? selectedDealer;
+  final Region? selectedRegion;
 
   const SelectDealerView({
     super.key,
-    required this.dealers,
+    //required this.dealers,
     required this.onDealerSelected,
     required this.onSubmit,
     this.selectedDealer,
+    this.selectedRegion
   });
 
   @override
@@ -58,7 +57,8 @@ class _SelectDealerViewState extends State<SelectDealerView> {
             labelText: 'Select Dealer',
             selectionSheetTitle: 'Select a Dealer',
             initialValue: widget.selectedDealer,
-            items: widget.dealers,
+            //items: widget.dealers,
+            
             onSelected: widget.onDealerSelected,
             //displayString: (dealer) => dealer.name,
             onCommitStateChanged: (isCommitted) {
@@ -68,7 +68,9 @@ class _SelectDealerViewState extends State<SelectDealerView> {
             },
             displayNames: const ['Account Code', 'Name', 'Address', 'City'],
             valueFields: const ['accountCode', 'name', 'address', 'city'],
-            mainField: 'name',
+            mainField: 'name', 
+            dataUrl: 'api/dealers/list',
+            filterConditions: widget.selectedRegion != null ? [['region', '=', widget.selectedRegion!.region]] : []
           ),
           const Spacer(),
           ActionButton(

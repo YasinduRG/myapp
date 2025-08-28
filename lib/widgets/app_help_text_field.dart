@@ -1,17 +1,24 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart'; //This ensures the entire widget tree is built and stable before any state updates are attempted. back button press
 import 'package:myapp/contracts/mappable.dart';
+import 'package:myapp/services/mock_api_service.dart';
 import 'package:myapp/theme/app_theme.dart';
+import 'package:myapp/util/snack_bar.dart';
+import 'package:myapp/widgets/app_loading_overlay.dart';
 
 //typedef DisplayStringCallback<T> = String Function(T item);
 typedef CommitStateChangedCallback = void Function(bool isCommitted);
+typedef FilterConditions = List<List<dynamic>>;
 
 class AppSelectionField<T extends Mappable> extends StatefulWidget {
-    final T? initialValue; // <<< ADD THIS NEW PROPERTY
+  final T? initialValue; // <<< ADD THIS NEW PROPERTY
 
   final TextEditingController controller;
   final String labelText;
   final IconData icon;
-  final List<T> items;
+  //final List<T> items;
   final void Function(T) onSelected;
   //final DisplayStringCallback<T> displayString;
   final CommitStateChangedCallback? onCommitStateChanged;
@@ -19,13 +26,16 @@ class AppSelectionField<T extends Mappable> extends StatefulWidget {
   final List<String> displayNames;
   final List<String> valueFields;
   final String mainField;
+  final String dataUrl;
+  final FilterConditions? filterConditions;
 
   const AppSelectionField({
     super.key,
     required this.controller,
     required this.labelText,
     this.icon = Icons.question_mark,
-    required this.items,
+    required this.dataUrl,
+    //required this.items,
     required this.onSelected,
     //required this.displayString,
     this.onCommitStateChanged, // Make it optional
@@ -33,7 +43,8 @@ class AppSelectionField<T extends Mappable> extends StatefulWidget {
     required this.displayNames,
     required this.valueFields,
     required this.mainField,
-    this.initialValue
+    this.initialValue,
+    this.filterConditions,
   });
 
   @override
@@ -43,66 +54,134 @@ class AppSelectionField<T extends Mappable> extends StatefulWidget {
 class _AppSelectionFieldState<T extends Mappable>
     extends State<AppSelectionField<T>> {
   T? _lastSelectedItem;
+  List<T> _fetchedItems = [];
+  late final AppLoadingOverlay _loadingOverlay;
 
   @override
   void initState() {
     super.initState();
+    _loadingOverlay = AppLoadingOverlay();
+
     _lastSelectedItem = widget.initialValue;
     widget.controller.addListener(_handleTextChange);
+
+    // if (widget.initialValue != null) {
+    //   widget.controller.text = _getMainFieldValue(widget.initialValue as T);
+    //   widget.onSelected(widget.initialValue as T);
+    //   widget.onCommitStateChanged?.call(true);
+    // }
+
+    if (widget.initialValue != null) {
+      // Set the text field's value immediately, which is safe.
+      widget.controller.text = _getMainFieldValue(widget.initialValue as T);
+
+      // Defer the callbacks that trigger state changes in parent widgets.
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        // This code will run after the first frame is rendered.
+        if (mounted) {
+          // Always check if the widget is still in the tree
+          widget.onSelected(widget.initialValue as T);
+          widget.onCommitStateChanged?.call(true);
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
+    _loadingOverlay.hide();
     widget.controller.removeListener(_handleTextChange);
     super.dispose();
   }
 
-
-  /// --- NEW: A simple helper to get the main field's value. ---
   String _getMainFieldValue(T item) {
     final map = item.toMap();
     return map[widget.mainField]?.toString() ?? '';
   }
 
-
-
   void _handleTextChange() {
     if (_lastSelectedItem != null &&
-        widget.controller.text !=
-             _getMainFieldValue(_lastSelectedItem as T)) {
+        widget.controller.text != _getMainFieldValue(_lastSelectedItem as T)) {
       _lastSelectedItem = null;
       widget.onCommitStateChanged?.call(false);
     }
   }
 
   Future<void> _showSelectionSheet(BuildContext context) async {
+    // // If items are already fetched, just show the selection sheet WITH OUT REFETCH
+    // if (_fetchedItems.isNotEmpty) {
+    //   await _presentSelectionSheet(context, _fetchedItems);
+    //   return;
+    // }
+    _loadingOverlay.show(context); // Use the common overlay
+    try {
+      // --- Build the full URL with filters ---
+      String fullUrl = widget.dataUrl;
+      if (widget.filterConditions != null &&
+          widget.filterConditions!.isNotEmpty) {
+        // 1. Encode the filter list into a JSON string
+        final String filterJson = jsonEncode(widget.filterConditions);
+        // 2. URL-encode the JSON string to make it safe for a URL
+        final String encodedFilters = Uri.encodeComponent(filterJson);
+        // 3. Append it as a query parameter
+        fullUrl = '${widget.dataUrl}?filters=$encodedFilters';
+      }
+      // --- End of URL building ---
+      final items = await MockApiService.fetchData<T>(fullUrl);
+
+      _loadingOverlay.hide();
+
+      if (mounted) {
+        setState(() {
+          _fetchedItems = items;
+        });
+        await _presentSelectionSheet(context, _fetchedItems);
+      }
+    } catch (e) {
+      _loadingOverlay.hide();
+      if (mounted) {
+        // Convert the exception to a string.
+        String errorMessage = e.toString();
+
+        // Remove the "Exception: " prefix, if it exists, for a cleaner message.
+        if (errorMessage.startsWith('Exception: ')) {
+          errorMessage = errorMessage.substring('Exception: '.length);
+        }
+        showSnackBar(
+          context: context,
+          message: errorMessage,
+          type: MessageType.error,
+        );
+      }
+    }
+  }
+
+  // Helper to present the actual selection sheet after data is ready
+  Future<void> _presentSelectionSheet(
+    BuildContext context,
+    List<T> items,
+  ) async {
     final initialQuery = widget.controller.text;
 
-    // --- NEW LOGIC: ATTEMPT AUTO-SELECTION FIRST ---
-    // If the text field is not empty, check for a unique, exact match.
     if (initialQuery.isNotEmpty) {
       final exactMatches =
-          widget.items.where((item) {
+          items.where((item) {
             final map = item.toMap();
             final fieldValue =
                 map[widget.mainField]?.toString().toLowerCase() ?? '';
             return fieldValue == initialQuery.toLowerCase();
           }).toList();
 
-      // If exactly one match is found, select it and skip showing the sheet.
       if (exactMatches.length == 1) {
         final selectedItem = exactMatches.first;
 
-        // Use the same logic as when selecting from the sheet
         widget.controller.removeListener(_handleTextChange);
         _lastSelectedItem = selectedItem;
-        //widget.controller.text = widget.displayString(selectedItem);
         widget.controller.text = _getMainFieldValue(selectedItem);
         widget.onSelected(selectedItem);
         widget.onCommitStateChanged?.call(true);
         widget.controller.addListener(_handleTextChange);
 
-        // Exit the function since we've made a selection.
         return;
       }
     }
@@ -114,7 +193,7 @@ class _AppSelectionFieldState<T extends Mappable>
       builder: (_) {
         return SelectionSheet<T>(
           title: widget.selectionSheetTitle,
-          items: widget.items,
+          items: items, // Pass the fetched items
           initialSearchQuery: initialQuery,
           displayNames: widget.displayNames,
           valueFields: widget.valueFields,
@@ -126,7 +205,6 @@ class _AppSelectionFieldState<T extends Mappable>
       widget.controller.removeListener(_handleTextChange);
       _lastSelectedItem = selectedItem;
       widget.controller.text = _getMainFieldValue(selectedItem);
-      //widget.controller.text = widget.displayString(selectedItem);
       widget.onSelected(selectedItem);
       widget.onCommitStateChanged?.call(true);
       widget.controller.addListener(_handleTextChange);
@@ -135,6 +213,7 @@ class _AppSelectionFieldState<T extends Mappable>
 
   @override
   Widget build(BuildContext context) {
+    // Remove the Stack and Positioned.fill loading indicator
     return AppHelpTextField(
       controller: widget.controller,
       labelText: widget.labelText,
@@ -179,6 +258,7 @@ class AppHelpTextField extends StatelessWidget {
         Expanded(
           child: TextFormField(
             controller: controller,
+            onFieldSubmitted: (_) => onIconPressed!(),
             keyboardType: keyboardType,
             validator: validator,
             decoration: InputDecoration(
@@ -220,7 +300,6 @@ class AppHelpTextField extends StatelessWidget {
                         : const BorderSide(color: AppColors.danger, width: 2.0),
               ),
               floatingLabelStyle: MaterialStateTextStyle.resolveWith((states) {
-
                 if (states.contains(MaterialState.error)) {
                   return const TextStyle(color: AppColors.danger);
                 }
@@ -334,6 +413,7 @@ class _SelectionSheetState<T extends Mappable>
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: TextField(
+                  
                   controller: _searchController,
                   autofocus: true,
                   decoration: InputDecoration(

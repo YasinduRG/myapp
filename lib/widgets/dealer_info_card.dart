@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/dealer_model.dart';
 import 'package:myapp/theme/app_theme.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class DealerInfoCard extends StatelessWidget {
   final Dealer dealer;
@@ -14,9 +15,15 @@ class DealerInfoCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
+      child:
+      // Text(
+      //   '${dealer.name} - ${dealer.accountCode}',
+      //   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      // ),
+      AutoSizeText(
         '${dealer.name} - ${dealer.accountCode}',
         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        maxLines: 1,
       ),
     );
   }

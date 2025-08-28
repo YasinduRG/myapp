@@ -21,46 +21,46 @@ class _ReprintScreenState extends State<ReprintScreen> {
   Invoice? _selectedInvoice;
   String? _selectedReturnType;
 
-  final List<Reference> _references = [
-    Reference(refId: 'REF001', remark: 'R1'),
-    Reference(refId: 'REF002', remark: ''),
-    Reference(refId: 'REF003', remark: 'R3'),
-    Reference(refId: 'REF004', remark: ''),
-    Reference(refId: 'REF005', remark: ''),
-  ];
+  // final List<Reference> _references = [
+  //   Reference(refId: 'REF001', remark: 'R1'),
+  //   Reference(refId: 'REF002', remark: ''),
+  //   Reference(refId: 'REF003', remark: 'R3'),
+  //   Reference(refId: 'REF004', remark: ''),
+  //   Reference(refId: 'REF005', remark: ''),
+  // ];
 
-  List<Invoice> _invoices = [
-    Invoice(
-      date: '07/07/2025',
-      invoiceNumber: 'MIN00205',
-      customer: 'ABC Motors',
-      totalValue: 27000.00,
-    ),
-    Invoice(
-      date: '08/07/2025',
-      invoiceNumber: 'MIN00206',
-      customer: 'XYZ Supplies',
-      totalValue: 15500.50,
-    ),
-    Invoice(
-      date: '08/07/2025',
-      invoiceNumber: 'MIN00207',
-      customer: 'John Doe',
-      totalValue: 9800.75,
-    ),
-    Invoice(
-      date: '09/07/2025',
-      invoiceNumber: 'MIN00208',
-      customer: 'Jane Smith',
-      totalValue: 32000.00,
-    ),
-    Invoice(
-      date: '10/07/2025',
-      invoiceNumber: 'MIN00209',
-      customer: 'Global Corp',
-      totalValue: 54300.20,
-    ),
-  ];
+  // List<Invoice> _invoices = [
+  //   Invoice(
+  //     date: '07/07/2025',
+  //     invoiceNumber: 'MIN00205',
+  //     customer: 'ABC Motors',
+  //     totalValue: 27000.00,
+  //   ),
+  //   Invoice(
+  //     date: '08/07/2025',
+  //     invoiceNumber: 'MIN00206',
+  //     customer: 'XYZ Supplies',
+  //     totalValue: 15500.50,
+  //   ),
+  //   Invoice(
+  //     date: '08/07/2025',
+  //     invoiceNumber: 'MIN00207',
+  //     customer: 'John Doe',
+  //     totalValue: 9800.75,
+  //   ),
+  //   Invoice(
+  //     date: '09/07/2025',
+  //     invoiceNumber: 'MIN00208',
+  //     customer: 'Jane Smith',
+  //     totalValue: 32000.00,
+  //   ),
+  //   Invoice(
+  //     date: '10/07/2025',
+  //     invoiceNumber: 'MIN00209',
+  //     customer: 'Global Corp',
+  //     totalValue: 54300.20,
+  //   ),
+  // ];
 
   void _onReferenceSelect(Reference ref) {
     setState(() {
@@ -146,7 +146,7 @@ class _ReprintScreenState extends State<ReprintScreen> {
     switch (_currentStep) {
       case 0:
         currentView = SelectReferenceView(
-          refs: _references,
+          //refs: _references,
           onRefSelected: _onReferenceSelect,
           onReturnTypeSelect: _onReturnTypeSelect,
           selectedReference: _selectedReference,
@@ -156,7 +156,7 @@ class _ReprintScreenState extends State<ReprintScreen> {
         break;
       case 1:
         currentView = SelectInvoiceView(
-          invoices: _invoices,
+          //invoices: _invoices,
           selectedInvoice: _selectedInvoice,
           onInvoiceSelected: _onInvoiceSelect,
           onSubmit: _submitInvoice,
@@ -197,7 +197,7 @@ class _ReprintScreenState extends State<ReprintScreen> {
 }
 
 class SelectReferenceView extends StatefulWidget {
-  final List<Reference> refs;
+  //final List<Reference> refs;
   final Function(Reference) onRefSelected;
   final Function(String) onReturnTypeSelect;
   final VoidCallback onSubmit;
@@ -206,7 +206,7 @@ class SelectReferenceView extends StatefulWidget {
 
   const SelectReferenceView({
     super.key,
-    required this.refs,
+    //required this.refs,
     required this.onRefSelected,
     required this.onReturnTypeSelect,
     required this.onSubmit,
@@ -268,7 +268,7 @@ class _SelectReferenceViewState extends State<SelectReferenceView> {
             controller: _referenceController,
             labelText: 'Select Reference',
             selectionSheetTitle: 'Re-Print',
-            items: widget.refs,
+            //items: widget.refs,
             onSelected: widget.onRefSelected,
             initialValue: widget.selectedReference,
             //displayString: (ref) => ref.refId,
@@ -283,6 +283,7 @@ class _SelectReferenceViewState extends State<SelectReferenceView> {
             valueFields: const ['refId', 'remark'],
             // Define the field for exact-match auto-selection.
             mainField: 'refId',
+            dataUrl: 'api/references/list',
           ),
 
           const Spacer(),
@@ -301,14 +302,14 @@ class _SelectReferenceViewState extends State<SelectReferenceView> {
 }
 
 class SelectInvoiceView extends StatefulWidget {
-  final List<Invoice> invoices;
+  //final List<Invoice> invoices;
   final Function(Invoice) onInvoiceSelected;
   final VoidCallback onSubmit;
   final Invoice? selectedInvoice;
 
   const SelectInvoiceView({
     super.key,
-    required this.invoices,
+    //required this.invoices,
     required this.onInvoiceSelected,
     required this.onSubmit,
     this.selectedInvoice,
@@ -352,10 +353,10 @@ class _SelectInvoiceViewState extends State<SelectInvoiceView> {
             controller: _invoiceController,
             labelText: 'Select Invoice',
             selectionSheetTitle: 'Select Invoice',
-            items: widget.invoices,
+            //items: widget.invoices,
             onSelected: widget.onInvoiceSelected,
             initialValue: widget.selectedInvoice,
-           // displayString: (invoice) => invoice.invoiceNumber,
+            // displayString: (invoice) => invoice.invoiceNumber,
             onCommitStateChanged: (isCommitted) {
               setState(() {
                 _isInvoiceSelectionCommitted = isCommitted;
@@ -377,6 +378,7 @@ class _SelectInvoiceViewState extends State<SelectInvoiceView> {
             ],
             // Set the main field for the exact-match auto-selection feature.
             mainField: 'invoiceNumber',
+            dataUrl: 'api/invoicess/list',
           ),
 
           const Spacer(),

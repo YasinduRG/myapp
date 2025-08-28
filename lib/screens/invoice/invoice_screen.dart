@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/models/column_model.dart';
 import 'package:myapp/models/part_model.dart';
+//import 'package:myapp/models/region_model.dart';
+import 'package:myapp/providers/region_provider.dart';
 import 'package:myapp/theme/app_theme.dart';
+import 'package:myapp/util/api_util.dart';
 import 'package:myapp/util/snack_bar.dart';
 import 'package:myapp/widgets/action_button.dart';
 import 'package:myapp/widgets/app_page.dart';
@@ -15,56 +19,20 @@ import 'package:myapp/models/dealer_model.dart';
 import 'package:myapp/views/auth_dealer_view.dart';
 import 'package:myapp/widgets/tin_info_card.dart';
 
-class InvoiceScreen extends StatefulWidget {
+class InvoiceScreen extends ConsumerStatefulWidget  {
   const InvoiceScreen({super.key});
 
   @override
-  State<InvoiceScreen> createState() => _InvoiceScreenState();
+  ConsumerState<InvoiceScreen> createState() => _InvoiceScreenState();
 }
 
-class _InvoiceScreenState extends State<InvoiceScreen> {
+class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
+
+
   int _currentStep = 0;
   Dealer? _selectedDealer;
   TinData? _selectedTin;
-  // Dummy Data
-  final List<Dealer> _dealers = [
-    Dealer(
-      name: 'Containers Co.',
-      surname: 'Containers',
-      accountCode: 'AC2000123230',
-      address: 'Test Address 1',
-      city: 'City 1',
-    ),
-    Dealer(
-      name: 'B Motors',
-      surname: 'B Motors',
-      accountCode: 'AC2000123231',
-      address: 'Test Address 2',
-      city: 'City 2',
-    ),
-    Dealer(
-      name: 'General Supplies',
-      surname: 'Supplies',
-      accountCode: 'AC2000123456',
-      address: 'Main Street 123',
-      city: 'City 1',
-    ),
-    Dealer(
-      name: 'Auto Parts',
-      surname: 'Auto',
-      accountCode: 'AC2000123789',
-      address: 'Industrial Ave',
-      city: 'City 3',
-    ),
-  ];
 
-  // MODIFIED: Added dummy data for TINs
-  final List<TinData> _tins = [
-    const TinData(tinNumber: 'TIN987654321', totalValue: 1500.75),
-    const TinData(tinNumber: 'TIN123456789', totalValue: 899.99),
-    const TinData(tinNumber: 'TIN555555555', totalValue: 12500.00),
-    const TinData(tinNumber: 'TIN314159265', totalValue: 432.50),
-  ];
 
   void _onDealerSelected(Dealer dealer) {
     setState(() {
@@ -114,9 +82,14 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   void _goBack() {
     if (_currentStep > 0) {
-      setState(() {
-        _currentStep--;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          _currentStep--;
+        });
       });
+      // setState(() {
+      //   _currentStep--;
+      // });
     } else {
       Navigator.of(context).pop();
       // In a real app, you might use Navigator.of(context).pop();
@@ -126,11 +99,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _selectedRegion = ref.watch(regionProvider).selectedRegion;
     Widget currentView;
     switch (_currentStep) {
       case 0:
         currentView = SelectDealerView(
-          dealers: _dealers,
+          //dealers: _dealers,
+          selectedRegion:_selectedRegion,
           selectedDealer: _selectedDealer,
           onDealerSelected: _onDealerSelected,
           onSubmit: _submitDealer, // Pass submit callback
@@ -145,7 +120,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       case 2:
         currentView = SelectTinNumberView(
           dealer: _selectedDealer!,
-          tins: _tins,
+          //tins: _tins,
           selectedTin: _selectedTin,
           onTinNumberSelected: _onTinSelected,
           onSubmit: _submitTin,
@@ -210,6 +185,8 @@ class CreateInvoiceView extends StatefulWidget {
 class _CreateInvoiceViewState extends State<CreateInvoiceView> {
   // --- STATE VARIABLES ---
   List<Part> _parts = [];
+  bool _isLoading = true; // Flag to manage loading state
+  String? _errorMessage; // To store any potential error message
 
   double get totalAmount {
     double total = 0.0;
@@ -225,22 +202,127 @@ class _CreateInvoiceViewState extends State<CreateInvoiceView> {
   @override
   void initState() {
     super.initState();
-    _loadParts(); // API integration later
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadParts());
+    //_loadParts(); // API integration later
   }
 
   // --- LOGIC METHODS ---
+  /// Fetches the list of returnable items using the reusable 'inquire' function.
+  Future<void> _loadParts() async {
+    // Set the initial loading state before making the API call
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
-  // Simulates loading parts data.
-  void _loadParts() {
-    _parts = [
-      Part(id: 'p1', partNo: 'AC2000123230', requestQty: 2, price: 12000.00),
-      Part(id: 'p2', partNo: 'AC2000123231', requestQty: 5, price: 5500.50),
-      Part(id: 'p3', partNo: 'AC2000123232', requestQty: 1, price: 8000.00),
-      Part(id: 'p4', partNo: 'AC2000123342', requestQty: 1, price: 1000.00),
-      Part(id: 'p5', partNo: 'AC2000123932', requestQty: 6, price: 3000.00),
-      Part(id: 'p6', partNo: 'AC2000123937', requestQty: 6, price: 300.00),
-    ];
+    // Use the generic data loading function
+    await inquire<Part>(
+      context: context,
+      dataUrl: 'api/parts/list', // The API endpoint for return items
+      onSuccess: (List<Part> data) {
+        // If the widget is still mounted, update the state with the fetched data.
+        if (mounted) {
+          setState(() {
+            _parts = data;
+            _isLoading = false;
+          });
+        }
+      },
+      onError: (String message) {
+        // If the widget is still mounted, update the state with the error message.
+        if (mounted) {
+          setState(() {
+            _errorMessage = message;
+            _isLoading = false;
+          });
+        }
+        showSnackBar(
+          context: context,
+          message: _errorMessage!,
+          type: MessageType.success,
+        );
+      },
+    );
   }
+
+  Widget _buildPartList() {
+    // First, check if the data is still loading.
+    if (_isLoading) {
+      return const Center(child: Text("Loading parts..."));
+    }
+
+    // Next, check if an error has occurred.
+    if (_errorMessage != null) {
+      return const Center(child: Text("No data Found"));
+    }
+
+    // If there is no error and loading is complete, show the list.
+    return FilterableListView<Part>(
+      //items: _parts,
+      searchHintText: 'Search by Part No or ID',
+      onFilterPressed: () {},
+      //dataUrl: 'api/parts/list',
+      filterableFields: ['partNo', 'id'],
+      columns: [
+        DynamicColumn<Part>(
+          label: 'Part No',
+          flex: 3,
+          cellBuilder:
+              (context, part) => Text(
+                part.partNo,
+                style: const TextStyle(fontSize: 12),
+                overflow: TextOverflow.ellipsis,
+              ),
+        ),
+        DynamicColumn<Part>(
+          label: 'Request Qty',
+          flex: 2,
+          cellBuilder:
+              (context, part) =>
+                  Center(child: Text(part.requestQty.toString())),
+        ),
+        DynamicColumn<Part>(
+          label: 'Select',
+          flex: 2,
+          cellBuilder:
+              (context, part) => Center(
+                child: Checkbox(
+                  value: part.isSelected,
+                  activeColor: AppColors.primary,
+                  checkColor: Colors.white,
+                  onChanged: (value) => _togglePartSelection(part.id),
+                ),
+              ),
+        ),
+        DynamicColumn<Part>(
+          label: 'Receive Qty',
+          flex: 3,
+          cellBuilder:
+              (context, part) => QuantitySelector(
+                value: part.receivedQty,
+                enabled: part.isSelected,
+                dialogTitle: 'Delivered Quantity',
+                maxQuantity: part.requestQty,
+                onChanged: (newValue) {
+                  setState(() => part.receivedQty = newValue);
+                },
+              ),
+        ),
+      ],
+      items: _parts,
+    );
+  }
+  // Simulates loading parts data.
+  // void _loadParts() {
+  //   _parts = [
+  //     Part(id: 'p1', partNo: 'AC2000123230', requestQty: 2, price: 12000.00),
+  //     Part(id: 'p2', partNo: 'AC2000123231', requestQty: 5, price: 5500.50),
+  //     Part(id: 'p3', partNo: 'AC2000123232', requestQty: 1, price: 8000.00),
+  //     Part(id: 'p4', partNo: 'AC2000123342', requestQty: 1, price: 1000.00),
+  //     Part(id: 'p5', partNo: 'AC2000123932', requestQty: 6, price: 3000.00),
+  //     Part(id: 'p6', partNo: 'AC2000123937', requestQty: 6, price: 300.00),
+  //   ];
+  // }
 
   Future<void> _showQuantityDialog(Part part) async {
     // Use your existing, separate QuantityEditDialog class
@@ -313,66 +395,62 @@ class _CreateInvoiceViewState extends State<CreateInvoiceView> {
               SizedBox(
                 // You can adjust this height based on your design needs.
                 height: 300.0,
-                child: FilterableListView<Part>(
-                  items: _parts,
-                  searchHintText: 'Search by Part No',
-                  onFilterPressed: () {},
-                  filterLogic: (parts, query) {
-                    if (query.isEmpty) return parts;
-                    return parts.where((part) {
-                      return part.partNo.toLowerCase().contains(
-                        query.toLowerCase(),
-                      );
-                    }).toList();
-                  },
-                  columns: [
-                    DynamicColumn<Part>(
-                      label: 'Part No',
-                      flex: 3,
-                      cellBuilder:
-                          (context, part) => Text(
-                            part.partNo,
-                            style: const TextStyle(fontSize: 12),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                    ),
-                    DynamicColumn<Part>(
-                      label: 'Request Qty',
-                      flex: 2,
-                      cellBuilder:
-                          (context, part) =>
-                              Center(child: Text(part.requestQty.toString())),
-                    ),
-                    DynamicColumn<Part>(
-                      label: 'Select',
-                      flex: 2,
-                      cellBuilder:
-                          (context, part) => Center(
-                            child: Checkbox(
-                              value: part.isSelected,
-                              activeColor: AppColors.primary,
-                              checkColor: Colors.white,
-                              onChanged:
-                                  (value) => _togglePartSelection(part.id),
-                            ),
-                          ),
-                    ),
-                    DynamicColumn<Part>(
-                      label: 'Receive Qty',
-                      flex: 3,
-                      cellBuilder:
-                          (context, part) => QuantitySelector(
-                            value: part.receivedQty,
-                            enabled: part.isSelected,
-                            dialogTitle: 'Delivered Quantity',
-                            maxQuantity: part.requestQty,
-                            onChanged: (newValue) {
-                              setState(() => part.receivedQty = newValue);
-                            },
-                          ),
-                    ),
-                  ],
-                ),
+                child: _buildPartList(),
+                // FilterableListView<Part>(
+                //   //items: _parts,
+                //   searchHintText: 'Search by Part No or ID',
+                //   onFilterPressed: () {},
+                //   //dataUrl: 'api/parts/list',
+                //   filterableFields: ['partNo', 'id'],
+                //   columns: [
+                //     DynamicColumn<Part>(
+                //       label: 'Part No',
+                //       flex: 3,
+                //       cellBuilder:
+                //           (context, part) => Text(
+                //             part.partNo,
+                //             style: const TextStyle(fontSize: 12),
+                //             overflow: TextOverflow.ellipsis,
+                //           ),
+                //     ),
+                //     DynamicColumn<Part>(
+                //       label: 'Request Qty',
+                //       flex: 2,
+                //       cellBuilder:
+                //           (context, part) =>
+                //               Center(child: Text(part.requestQty.toString())),
+                //     ),
+                //     DynamicColumn<Part>(
+                //       label: 'Select',
+                //       flex: 2,
+                //       cellBuilder:
+                //           (context, part) => Center(
+                //             child: Checkbox(
+                //               value: part.isSelected,
+                //               activeColor: AppColors.primary,
+                //               checkColor: Colors.white,
+                //               onChanged:
+                //                   (value) => _togglePartSelection(part.id),
+                //             ),
+                //           ),
+                //     ),
+                //     DynamicColumn<Part>(
+                //       label: 'Receive Qty',
+                //       flex: 3,
+                //       cellBuilder:
+                //           (context, part) => QuantitySelector(
+                //             value: part.receivedQty,
+                //             enabled: part.isSelected,
+                //             dialogTitle: 'Delivered Quantity',
+                //             maxQuantity: part.requestQty,
+                //             onChanged: (newValue) {
+                //               setState(() => part.receivedQty = newValue);
+                //             },
+                //           ),
+                //     ),
+                //   ],
+                //   items: _parts,
+                // ),
               ),
             ],
           ),
