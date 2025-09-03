@@ -73,6 +73,12 @@ class MockApiService {
       case 'api/return-items/list':
         sourceData = DummyData.returnItems;
         break;
+      case 'api/branch/list':
+        sourceData = DummyData.branches;
+        break;
+      case 'api/bank/list':
+        sourceData = DummyData.banks;
+        break;
       // If the path doesn't match any known endpoint, throw an exception
       default:
         throw Exception('Invalid API URL Path: $path');

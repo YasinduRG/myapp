@@ -28,6 +28,7 @@ class AppSelectionField<T extends Mappable> extends StatefulWidget {
   final String mainField;
   final String dataUrl;
   final FilterConditions? filterConditions;
+  final Future<bool> Function()? preRequest;
 
   const AppSelectionField({
     super.key,
@@ -45,6 +46,8 @@ class AppSelectionField<T extends Mappable> extends StatefulWidget {
     required this.mainField,
     this.initialValue,
     this.filterConditions,
+    this.preRequest, // <<< ADD THIS
+
   });
 
   @override
@@ -64,12 +67,6 @@ class _AppSelectionFieldState<T extends Mappable>
 
     _lastSelectedItem = widget.initialValue;
     widget.controller.addListener(_handleTextChange);
-
-    // if (widget.initialValue != null) {
-    //   widget.controller.text = _getMainFieldValue(widget.initialValue as T);
-    //   widget.onSelected(widget.initialValue as T);
-    //   widget.onCommitStateChanged?.call(true);
-    // }
 
     if (widget.initialValue != null) {
       // Set the text field's value immediately, which is safe.
@@ -113,6 +110,14 @@ class _AppSelectionFieldState<T extends Mappable>
     //   await _presentSelectionSheet(context, _fetchedItems);
     //   return;
     // }
+
+    if (widget.preRequest != null) {
+      final shouldProceed = await widget.preRequest!();
+      if (!shouldProceed) {
+        return;
+      }
+    }
+    
     _loadingOverlay.show(context); // Use the common overlay
     try {
       // --- Build the full URL with filters ---
@@ -413,7 +418,6 @@ class _SelectionSheetState<T extends Mappable>
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: TextField(
-                  
                   controller: _searchController,
                   autofocus: true,
                   decoration: InputDecoration(

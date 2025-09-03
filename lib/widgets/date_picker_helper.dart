@@ -65,31 +65,3 @@ Future<DateTime?> selectDate(BuildContext context, DateTime? initialDate) {
     },
   );
 }
-
-// Future<DateTime?> selectDate(
-//   BuildContext context,
-//   DateTime? initialDate,
-// ) async {
-//   final DateTime? picked = await showDatePicker(
-//     context: context,
-//     initialDate: initialDate ?? DateTime.now(),
-//     firstDate: DateTime(2000),
-//     lastDate: DateTime(2101),
-//     builder: (context, child) {
-//       return Theme(
-//         data: Theme.of(context).copyWith(
-//           colorScheme: const ColorScheme.light(
-//             primary: AppColors.primary,
-//             onPrimary: AppColors.white,
-//             onSurface: Colors.black,
-//           ),
-//           textButtonTheme: TextButtonThemeData(
-//             style: TextButton.styleFrom(foregroundColor: AppColors.primary),
-//           ),
-//         ),
-//         child: child!,
-//       );
-//     },
-//   );
-//   return picked;
-// }

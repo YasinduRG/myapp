@@ -1,4 +1,6 @@
 // Dummy Data File
+import 'package:myapp/models/bank_branch_model.dart';
+import 'package:myapp/models/bank_model.dart';
 import 'package:myapp/models/dealer_model.dart';
 import 'package:myapp/models/invoic_model.dart';
 import 'package:myapp/models/part_model.dart';
@@ -919,6 +921,48 @@ class DummyData {
     Part(id: 'p12', partNo: 'XY-9988-ZZ', requestQty: 7, price: 125.50),
   ];
 
+   static final List<Bank> _banks = [
+    Bank(bankCode: '7010', bankName: 'Bank of Ceylon'),
+    Bank(bankCode: '7056', bankName: 'Commercial Bank of Ceylon'),
+    Bank(bankCode: '7278', bankName: 'Sampath Bank'),
+    Bank(bankCode: '7083', bankName: 'Hatton National Bank'),
+    Bank(bankCode: '7135', bankName: 'Peoples Bank'),
+  ];
+
+  static final List<BankBranch> _branches = [
+    // Bank of Ceylon Branches
+    BankBranch(bankCode: '7010', bankName: 'Bank of Ceylon', branchCode: '001', branchName: 'Bank of Ceylon - Colombo'),
+    BankBranch(bankCode: '7010', bankName: 'Bank of Ceylon', branchCode: '002', branchName: 'Bank of Ceylon - Kandy'),
+    BankBranch(bankCode: '7010', bankName: 'Bank of Ceylon', branchCode: '003', branchName: 'Bank of Ceylon - Galle'),
+    BankBranch(bankCode: '7010', bankName: 'Bank of Ceylon', branchCode: '004', branchName: 'Bank of Ceylon - Jaffna'),
+
+    // Commercial Bank of Ceylon Branches
+    BankBranch(bankCode: '7056', bankName: 'Commercial Bank of Ceylon', branchCode: '001', branchName: 'Commercial Bank - Colombo'),
+    BankBranch(bankCode: '7056', bankName: 'Commercial Bank of Ceylon', branchCode: '002', branchName: 'Commercial Bank - Kandy'),
+    BankBranch(bankCode: '7056', bankName: 'Commercial Bank of Ceylon', branchCode: '003', branchName: 'Commercial Bank - Galle'),
+    BankBranch(bankCode: '7056', bankName: 'Commercial Bank of Ceylon', branchCode: '004', branchName: 'Commercial Bank - Matara'),
+
+    // Sampath Bank Branches
+    BankBranch(bankCode: '7278', bankName: 'Sampath Bank', branchCode: '001', branchName: 'Sampath Bank - Colombo'),
+    BankBranch(bankCode: '7278', bankName: 'Sampath Bank', branchCode: '002', branchName: 'Sampath Bank - Gampaha'),
+    BankBranch(bankCode: '7278', bankName: 'Sampath Bank', branchCode: '003', branchName: 'Sampath Bank - Kurunegala'),
+    BankBranch(bankCode: '7278', bankName: 'Sampath Bank', branchCode: '004', branchName: 'Sampath Bank - Panadura'),
+
+    // Hatton National Bank Branches
+    BankBranch(bankCode: '7083', bankName: 'Hatton National Bank', branchCode: '001', branchName: 'HNB - Colombo'),
+    BankBranch(bankCode: '7083', bankName: 'Hatton National Bank', branchCode: '002', branchName: 'HNB - Kandy'),
+    BankBranch(bankCode: '7083', bankName: 'Hatton National Bank', branchCode: '003', branchName: 'HNB - Galle'),
+    BankBranch(bankCode: '7083', bankName: 'Hatton National Bank', branchCode: '004', branchName: 'HNB - Negombo'),
+
+    // Peoples Bank Branches
+    BankBranch(bankCode: '7135', bankName: 'Peoples Bank', branchCode: '001', branchName: 'Peoples Bank - Colombo'),
+    BankBranch(bankCode: '7135', bankName: 'Peoples Bank', branchCode: '002', branchName: 'Peoples Bank - Nugegoda'),
+    BankBranch(bankCode: '7135', bankName: 'Peoples Bank', branchCode: '003', branchName: 'Peoples Bank - Gampaha'),
+    BankBranch(bankCode: '7135', bankName: 'Peoples Bank', branchCode: '004', branchName: 'Peoples Bank - Anuradhapura'),
+  ];
+
+  static List<Bank> get banks => _banks;
+  static List<BankBranch> get branches => _branches;
   static List<Dealer> get dealers => _dealers;
   static List<Reference> get references => _references;
   static List<Invoice> get invoices => _invoices;

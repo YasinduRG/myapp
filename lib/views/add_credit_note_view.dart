@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/models/column_model.dart';
 import 'package:myapp/models/credit_note_model.dart';
 import 'package:myapp/theme/app_theme.dart';
+import 'package:myapp/util/snack_bar.dart';
 import 'package:myapp/widgets/action_button.dart';
 import 'package:myapp/widgets/app_table.dart';
 import 'package:myapp/widgets/text_form_field.dart';
@@ -11,9 +12,10 @@ class AddCreditNotesView extends StatefulWidget {
   final Function(List<CreditNote>) onSubmit;
   final List<CreditNote> initialNotes;
 
-
-  const AddCreditNotesView({super.key, required this.onSubmit,
-  this.initialNotes = const [], 
+  const AddCreditNotesView({
+    super.key,
+    required this.onSubmit,
+    this.initialNotes = const [],
   });
 
   @override
@@ -25,10 +27,6 @@ class _AddCreditNotesViewState extends State<AddCreditNotesView> {
   final _amountController = TextEditingController();
   // final List<CreditNote> _addedCreditNotes = [];
   late final List<CreditNote> _addedCreditNotes;
-
-
-
-
 
   @override
   void initState() {
@@ -50,12 +48,15 @@ class _AddCreditNotesViewState extends State<AddCreditNotesView> {
       _amountController.clear();
       FocusScope.of(context).unfocus(); // Dismiss keyboard
     } else {
-
-
-      // Optional: Show an error message if input is invalid
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid CRN and amount.')),
+      showSnackBar(
+        context: context,
+        message: 'Please enter a valid CRN and amount.',
+        type: MessageType.warning,
       );
+      // Optional: Show an error message if input is invalid
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Please enter a valid CRN and amount.')),
+      // );
     }
   }
 
@@ -63,6 +64,36 @@ class _AddCreditNotesViewState extends State<AddCreditNotesView> {
     setState(() {
       _addedCreditNotes.remove(note);
     });
+  }
+
+  Widget _buildCRNList() {
+    return FilterableListView<CreditNote>(
+      items: _addedCreditNotes,
+      searchHintText: 'Search by Credit Number',
+      filterableFields: ['crnNumber'],
+      columns: [
+        DynamicColumn<CreditNote>(
+          label: 'Credit Note No.',
+          flex: 3,
+          cellBuilder: (context, item) => Text(item.crnNumber),
+        ),
+        DynamicColumn<CreditNote>(
+          label: 'Credit Note Amount',
+          flex: 3,
+          cellBuilder: (context, item) => Text(item.amount.toStringAsFixed(2)),
+        ),
+        DynamicColumn<CreditNote>(
+          label: '',
+          flex: 1,
+          cellBuilder: (context, item) {
+            return IconButton(
+              icon: const Icon(Icons.close, color: AppColors.disabled),
+              onPressed: () => _removeNoteFromList(item),
+            );
+          },
+        ),
+      ],
+    );
   }
 
   @override
@@ -74,38 +105,20 @@ class _AddCreditNotesViewState extends State<AddCreditNotesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
+    return Column(
         children: [
-                  AppTextField(
-          controller: _crnController,
-          labelText: 'CRN No',
-        ),
-        const SizedBox(height: 16),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
+          AppTextField(controller: _crnController, labelText: 'CRN No'),
+          const SizedBox(height: 16),
 
-        AppTextField(
-          controller: _amountController,
-          labelText: 'CRN Amount',
-          keyboardType: TextInputType.number,
-        ),
-          // Input Fields
-          // TextField(
-          //   controller: _crnController,
-          //   decoration: const InputDecoration(
-          //     labelText: 'CRN No',
-          //     border: OutlineInputBorder(),
-          //   ),
-          // ),
-          // const SizedBox(height: 16),
-          // TextField(
-          //   controller: _amountController,
-          //   decoration: const InputDecoration(
-          //     labelText: 'CRN Amount',
-          //     border: OutlineInputBorder(),
-          //   ),
-          //   keyboardType: TextInputType.number,
-          // ),
+          AppTextField(
+            controller: _amountController,
+            labelText: 'CRN Amount',
+            keyboardType: TextInputType.number,
+          ),
           const SizedBox(height: 24),
 
           // Add Button
@@ -117,45 +130,113 @@ class _AddCreditNotesViewState extends State<AddCreditNotesView> {
           ),
           const SizedBox(height: 24),
 
-          // Table of Added Notes
-          Expanded(
-            child: FilterableListView<CreditNote>(
-              items: _addedCreditNotes,
-              searchHintText: 'Search by Credit Number',
-              filterableFields: ['crnNumber'],
-              columns: [
-                DynamicColumn<CreditNote>(
-                  label: 'Credit Note No.',
-                  flex: 3,
-                  cellBuilder: (context, item) => Text(item.crnNumber),
-                ),
-                DynamicColumn<CreditNote>(
-                  label: 'Credit Note Amount',
-                  flex: 3,
-                  cellBuilder:
-                      (context, item) => Text(item.amount.toStringAsFixed(2)),
-                ),
-                DynamicColumn<CreditNote>(
-                  label: '',
-                  flex: 1,
-                  cellBuilder: (context, item) {
-                    return IconButton(
-                      icon: const Icon(Icons.close, color: AppColors.disabled),
-                      onPressed: () => _removeNoteFromList(item),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
+          // // This Expanded widget will contain your scrollable list
+          // Expanded(
+          //   child:
+          //       _buildCRNList(), // Assuming this returns a scrollable widget like ListView
+          // ),
+
+          // const SizedBox(height: 16),
+
+          SizedBox(
+                height: 300.0,
+                child: _buildCRNList(),
+              )
+              ]
+
+           )),
+           
+                  Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
           const SizedBox(height: 16),
           ActionButton(
             label: 'Submit',
             onPressed: () => widget.onSubmit(_addedCreditNotes),
             disabled: _addedCreditNotes.isEmpty,
           ),
-        ],
-      ),
-    );
+            ],
+          ),
+        ),
+        ]
+
+
+           
+           );
+          // AppTextField(controller: _crnController, labelText: 'CRN No'),
+          // const SizedBox(height: 16),
+
+          // AppTextField(
+          //   controller: _amountController,
+          //   labelText: 'CRN Amount',
+          //   keyboardType: TextInputType.number,
+          // ),
+          // const SizedBox(height: 24),
+
+          // // Add Button
+          // ActionButton(
+          //   label: 'Add Credit Note',
+          //   icon: Icons.add_card, // Example icon
+          //   onPressed: _addNoteToList,
+          //   color: AppColors.success,
+          // ),
+          // const SizedBox(height: 24),
+
+          // // This Expanded widget will contain your scrollable list
+          // Expanded(
+          //   child:
+          //       _buildCRNList(), // Assuming this returns a scrollable widget like ListView
+          // ),
+
+          // const SizedBox(height: 16),
+
+          // SizedBox(
+          //       height: 300.0,
+          //       child: _buildCRNList(),
+          //     ),
+
+          // Table of Added Notes
+          // Expanded(
+          //   child: FilterableListView<CreditNote>(
+          //     items: _addedCreditNotes,
+          //     searchHintText: 'Search by Credit Number',
+          //     filterableFields: ['crnNumber'],
+          //     columns: [
+          //       DynamicColumn<CreditNote>(
+          //         label: 'Credit Note No.',
+          //         flex: 3,
+          //         cellBuilder: (context, item) => Text(item.crnNumber),
+          //       ),
+          //       DynamicColumn<CreditNote>(
+          //         label: 'Credit Note Amount',
+          //         flex: 3,
+          //         cellBuilder:
+          //             (context, item) => Text(item.amount.toStringAsFixed(2)),
+          //       ),
+          //       DynamicColumn<CreditNote>(
+          //         label: '',
+          //         flex: 1,
+          //         cellBuilder: (context, item) {
+          //           return IconButton(
+          //             icon: const Icon(Icons.close, color: AppColors.disabled),
+          //             onPressed: () => _removeNoteFromList(item),
+          //           );
+          //         },
+          //       ),
+          //     ],
+          //   ),
+          // ),
+
+    //       const SizedBox(height: 16),
+    //       ActionButton(
+    //         label: 'Submit',
+    //         onPressed: () => widget.onSubmit(_addedCreditNotes),
+    //         disabled: _addedCreditNotes.isEmpty,
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }

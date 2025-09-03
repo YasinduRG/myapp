@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/models/column_model.dart';
 import 'package:myapp/models/part_model.dart';
+import 'package:myapp/models/region_model.dart';
 //import 'package:myapp/models/region_model.dart';
 import 'package:myapp/providers/region_provider.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/util/api_util.dart';
 import 'package:myapp/util/snack_bar.dart';
+import 'package:myapp/views/region_selection_view.dart';
 import 'package:myapp/widgets/action_button.dart';
 import 'package:myapp/widgets/app_page.dart';
 import 'package:myapp/widgets/app_table.dart';
@@ -19,7 +21,7 @@ import 'package:myapp/models/dealer_model.dart';
 import 'package:myapp/views/auth_dealer_view.dart';
 import 'package:myapp/widgets/tin_info_card.dart';
 
-class InvoiceScreen extends ConsumerStatefulWidget  {
+class InvoiceScreen extends ConsumerStatefulWidget {
   const InvoiceScreen({super.key});
 
   @override
@@ -27,13 +29,42 @@ class InvoiceScreen extends ConsumerStatefulWidget  {
 }
 
 class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
-
-
   int _currentStep = 0;
-  Dealer? _selectedDealer;
+  //Dealer? _selectedDealer;
   TinData? _selectedTin;
 
+  // Regional settings
+  Region? _selectedRegion;
 
+  void _onRegionSelected(Region region) {
+    setState(() {
+      _selectedRegion = region;
+    });
+  }
+
+  void _submitRegion() {
+    if (_selectedRegion != null) {
+      ref.read(regionProvider.notifier).setRegion(_selectedRegion!);
+      showSnackBar(
+        context: context,
+        message: 'Region set to: ${_selectedRegion!.region}',
+        type: MessageType.success,
+      );
+      setState(() {
+        _currentStep = 0; // Move to the inital
+      });
+    }
+  }
+
+  void _onRegionSelectionRequested() {
+    setState(() {
+      _currentStep = -1; // Move to Region selection step
+    });
+  }
+  //--- Regional Settings
+
+  // Dealer Selection
+  Dealer? _selectedDealer;
   void _onDealerSelected(Dealer dealer) {
     setState(() {
       _selectedDealer = dealer;
@@ -53,6 +84,7 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
       _currentStep = 2; // Move to Create Invoice step
     });
   }
+  //--- Dealer Selection
 
   // MODIFIED: Added callbacks for TIN selection
   void _onTinSelected(TinData tin) {
@@ -99,16 +131,24 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _selectedRegion = ref.watch(regionProvider).selectedRegion;
     Widget currentView;
+    final selectedRegion = ref.watch(regionProvider).selectedRegion;
     switch (_currentStep) {
+      case -1:
+        currentView = SelectRegionView(
+          selectedRegion: selectedRegion,
+          onRegionSelected: _onRegionSelected,
+          onSubmit: _submitRegion,
+        );
+        break;
       case 0:
         currentView = SelectDealerView(
           //dealers: _dealers,
-          selectedRegion:_selectedRegion,
+          selectedRegion: selectedRegion,
           selectedDealer: _selectedDealer,
           onDealerSelected: _onDealerSelected,
           onSubmit: _submitDealer, // Pass submit callback
+          onRegionSelectionRequested: _onRegionSelectionRequested,
         );
         break;
       case 1:
@@ -138,6 +178,9 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
     }
     final String currentTitle;
     switch (_currentStep) {
+      case -1:
+        currentTitle = 'Select Region'; // New title
+        break;
       case 0:
         currentTitle = 'Select Dealer';
         break;
@@ -389,68 +432,9 @@ class _CreateInvoiceViewState extends State<CreateInvoiceView> {
               const SizedBox(height: 12),
               TinInfoDisplay(tinData: widget.tindata),
               const SizedBox(height: 12),
-
-              // 4. The FilterableListView is wrapped in a SizedBox to give it a
-              //    fixed, predictable height within the scrollable list.
               SizedBox(
-                // You can adjust this height based on your design needs.
                 height: 300.0,
                 child: _buildPartList(),
-                // FilterableListView<Part>(
-                //   //items: _parts,
-                //   searchHintText: 'Search by Part No or ID',
-                //   onFilterPressed: () {},
-                //   //dataUrl: 'api/parts/list',
-                //   filterableFields: ['partNo', 'id'],
-                //   columns: [
-                //     DynamicColumn<Part>(
-                //       label: 'Part No',
-                //       flex: 3,
-                //       cellBuilder:
-                //           (context, part) => Text(
-                //             part.partNo,
-                //             style: const TextStyle(fontSize: 12),
-                //             overflow: TextOverflow.ellipsis,
-                //           ),
-                //     ),
-                //     DynamicColumn<Part>(
-                //       label: 'Request Qty',
-                //       flex: 2,
-                //       cellBuilder:
-                //           (context, part) =>
-                //               Center(child: Text(part.requestQty.toString())),
-                //     ),
-                //     DynamicColumn<Part>(
-                //       label: 'Select',
-                //       flex: 2,
-                //       cellBuilder:
-                //           (context, part) => Center(
-                //             child: Checkbox(
-                //               value: part.isSelected,
-                //               activeColor: AppColors.primary,
-                //               checkColor: Colors.white,
-                //               onChanged:
-                //                   (value) => _togglePartSelection(part.id),
-                //             ),
-                //           ),
-                //     ),
-                //     DynamicColumn<Part>(
-                //       label: 'Receive Qty',
-                //       flex: 3,
-                //       cellBuilder:
-                //           (context, part) => QuantitySelector(
-                //             value: part.receivedQty,
-                //             enabled: part.isSelected,
-                //             dialogTitle: 'Delivered Quantity',
-                //             maxQuantity: part.requestQty,
-                //             onChanged: (newValue) {
-                //               setState(() => part.receivedQty = newValue);
-                //             },
-                //           ),
-                //     ),
-                //   ],
-                //   items: _parts,
-                // ),
               ),
             ],
           ),

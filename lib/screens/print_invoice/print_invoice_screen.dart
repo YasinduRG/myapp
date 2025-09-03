@@ -1,31 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myapp/models/region_model.dart';
+import 'package:myapp/providers/region_provider.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/models/invoic_model.dart';
 import 'package:myapp/models/dealer_model.dart';
 import 'package:myapp/util/snack_bar.dart';
+import 'package:myapp/views/region_selection_view.dart';
+import 'package:myapp/views/select_dealer_view.dart';
 import 'package:myapp/widgets/action_button.dart';
 import 'package:myapp/views/auth_dealer_view.dart';
 import 'package:myapp/widgets/app_page.dart';
+import 'package:myapp/widgets/dealer_info_card.dart';
 
 // --- MAIN WIDGET: Manages the flow state ---
-class PrintInvoiceScreen extends StatefulWidget {
+class PrintInvoiceScreen extends ConsumerStatefulWidget {
   const PrintInvoiceScreen({super.key});
 
   @override
-  State<PrintInvoiceScreen> createState() => _PrintInvoiceScreenState();
+  ConsumerState<PrintInvoiceScreen> createState() => _PrintInvoiceScreenState();
 }
 
-class _PrintInvoiceScreenState extends State<PrintInvoiceScreen> {
+class _PrintInvoiceScreenState extends ConsumerState<PrintInvoiceScreen> {
   int _currentStep = 0;
-  Dealer? _selectedDealer;
+  //Dealer? _selectedDealer;
 
-  // 1. MODIFIED: The callback now accepts the authenticated dealer.
-  void _onAuthenticated(Dealer authenticatedDealer) {
+  // Regional settings
+  Region? _selectedRegion;
+
+  void _onRegionSelected(Region region) {
     setState(() {
-      _selectedDealer = authenticatedDealer; // 2. Set the selected dealer
-      _currentStep = 1; // 3. Move to the next step
+      _selectedRegion = region;
     });
   }
+
+  void _submitRegion() {
+    if (_selectedRegion != null) {
+      ref.read(regionProvider.notifier).setRegion(_selectedRegion!);
+      showSnackBar(
+        context: context,
+        message: 'Region set to: ${_selectedRegion!.region}',
+        type: MessageType.success,
+      );
+      setState(() {
+        _currentStep = 0; // Move to the inital
+      });
+    }
+  }
+
+  void _onRegionSelectionRequested() {
+    setState(() {
+      _currentStep = -1; // Move to Region selection step
+    });
+  }
+  //--- Regional Settings
+
+  // Dealer Selection
+  Dealer? _selectedDealer;
+  void _onDealerSelected(Dealer dealer) {
+    setState(() {
+      _selectedDealer = dealer;
+    });
+  }
+
+  void _submitDealer() {
+    if (_selectedDealer != null) {
+      setState(() {
+        _currentStep = 1; // Move to Authenticate step
+      });
+    }
+  }
+
+  void _onAuthenticated() {
+    setState(() {
+      _currentStep = 2; // Move to Create Invoice step
+    });
+  }
+  //--- Dealer Selection
 
   void _goBack() {
     if (_currentStep > 0) {
@@ -40,64 +91,62 @@ class _PrintInvoiceScreenState extends State<PrintInvoiceScreen> {
   @override
   Widget build(BuildContext context) {
     Widget currentView;
-    // This dealer is created here for demonstration.
-    // In a real app, you would likely fetch or pass this data.
-    final dealerToAuth = Dealer(
-      name: 'B Motors',
-      surname: 'B Motors',
-      accountCode: 'AC2000123231',
-      address: 'Test Address 2',
-      city: 'City 2',
-    );
+    final selectedRegion = ref.watch(regionProvider).selectedRegion;
 
     switch (_currentStep) {
+      case -1:
+        currentView = SelectRegionView(
+          selectedRegion: selectedRegion,
+          onRegionSelected: _onRegionSelected,
+          onSubmit: _submitRegion,
+        );
+        break;
       case 0:
-        currentView = AuthenticateDealerView(
-          dealer: dealerToAuth,
-          // Pass the modified callback. When onAuthenticated is called
-          // inside AuthenticateDealerView, it will pass the dealer object back.
-          onAuthenticated: () => _onAuthenticated(dealerToAuth),
+        currentView = SelectDealerView(
+          //dealers: _dealers,
+          selectedRegion: selectedRegion,
+          selectedDealer: _selectedDealer,
+          onDealerSelected: _onDealerSelected,
+          onSubmit: _submitDealer, // Pass submit callback
+          onRegionSelectionRequested: _onRegionSelectionRequested,
         );
         break;
       case 1:
-        // Now _selectedDealer is guaranteed to be non-null here.
+        currentView = AuthenticateDealerView(
+          dealer: _selectedDealer!,
+          onAuthenticated: _onAuthenticated,
+        );
+        break;
+      case 2:
         currentView = PrintInvoiceMainScreen(dealer: _selectedDealer!);
         break;
       default:
         currentView = const Center(child: Text('Error: Invalid step'));
     }
 
-    final String currentTitle =
-        _currentStep == 0 ? 'Authenticate Dealer' : 'Print Invoice';
-
+    final String currentTitle;
+    switch (_currentStep) {
+      case -1:
+        currentTitle = 'Select Region'; // New title
+        break;
+      case 0:
+        currentTitle = 'Select Dealer';
+        break;
+      case 1:
+        currentTitle = 'Authenticate Dealer';
+        break;
+      case 2:
+        currentTitle = 'Print Invoice';
+        break;
+      default:
+        currentTitle = 'Error';
+    }
     return AppPage(
       title: currentTitle,
-      onBack: _goBack, // Pass our custom back logic for the multi-step flow.
-      // Since the child views likely manage their own padding,
-      // we set the AppPage's contentPadding to zero to avoid double padding.
+      onBack: _goBack,
       contentPadding: EdgeInsets.zero,
-
-      // The current step's view is passed as the child.
-      // AppPage will handle placing it correctly.
       child: currentView,
     );
-    // return Scaffold(
-    //   backgroundColor: AppColors.background,
-    //   // Use the new CommonHeader in the appBar property
-    //   appBar: AppHeader(
-    //     title: currentTitle,
-    //     onBack: _goBack, // Pass the custom back handler
-    //   ),
-    //   body: SafeArea(
-    //     child: Column(
-    //       children: [
-    //         Expanded(child: currentView),
-    //         //const Padding(padding: EdgeInsets.all(16.0), child: AppFooter()),
-    //         const AppFooter(),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 }
 
@@ -105,7 +154,6 @@ class PrintInvoiceMainScreen extends StatelessWidget {
   final Dealer dealer;
   const PrintInvoiceMainScreen({super.key, required this.dealer});
 
-  // Dummy data based on the figma
   final List<InvoiceItem> _invoiceItems = const [
     InvoiceItem(invoiceNumber: 'MIN2025111700000567', invoiceAmount: '24000'),
     InvoiceItem(invoiceNumber: 'MIN2025111700000444', invoiceAmount: '24000'),
@@ -113,64 +161,19 @@ class PrintInvoiceMainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //   return LayoutBuilder(
-    //   builder: (BuildContext context, BoxConstraints constraints) {
-    //     // 'constraints.maxHeight' gives us the actual available height of the viewport.
-
-    //     return Container(
-    //       // 2. Create a container with a minimum height equal to the viewport height.
-    //       // This ensures our Column has a fixed, bounded height to work with.
-    //       constraints: BoxConstraints(minHeight: constraints.maxHeight),
-    //       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-    //       child: Column(
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: [
-    //           // This content stays at the top
-    //           const SizedBox(height: 24),
-    //           Text(
-    //             dealer.name,
-    //             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-    //           ),
-    //           const SizedBox(height: 16),
-    //           _buildInvoiceTable(),
-
-    //           // 3. The Spacer now works! It knows exactly how much space to fill
-    //           // to push the next items to the bottom of the container.
-    //           const Spacer(),
-
-    //           // This content is now correctly pushed to the bottom
-    //           _buildConfirmationBox(),
-    //           const SizedBox(height: 20),
-    //           _buildAgreeButton(),
-    //         ],
-    //       ),
-    //     );
-    //   },
-    // );
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), // No top padding
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. MODIFIED: Header and the following SizedBox are removed.
           const SizedBox(height: 24),
-
-          // 2. Dealer Info
-          Text(
-            dealer.name,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+          DealerInfoCard(dealer: dealer),
           const SizedBox(height: 16),
-
-          // 3. Invoice Details Table
           _buildInvoiceTable(),
           const Spacer(),
-
-          // 4. Confirmation Text
           _buildConfirmationBox(),
           const SizedBox(height: 20),
 
-          // 5. Agree Button
           ActionButton(
             icon: Icons.handshake_outlined,
             label: 'Agree',
@@ -182,7 +185,6 @@ class PrintInvoiceMainScreen extends StatelessWidget {
               );
             },
           ),
-          // 6. MODIFIED: AppFooter is removed as it's now handled by the parent screen.
         ],
       ),
     );

@@ -16,7 +16,7 @@ import 'package:myapp/screens/print_invoice/print_invoice_screen.dart';
 import 'package:myapp/providers/auth_provider.dart';
 import 'package:myapp/screens/test_notify/test_notify.dart';
 import 'package:myapp/services/notification_services.dart';
-import 'package:myapp/util/snack_bar.dart'; // <-- 1. IMPORT your utils file
+import 'package:myapp/util/snack_bar.dart'; // snack bar
 
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -70,9 +70,7 @@ class MyApp extends ConsumerWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: authState.isLoggedIn ? const MainMenuScreen() : const LoginScreen(),
-      // Define all possible navigation paths in your app
       routes: {
-        //AppRoutes.authWrapper: (context) => const AuthWrapper(),
         AppRoutes.login: (context) => const LoginScreen(),
         AppRoutes.mainMenu: (context) => const MainMenuScreen(),
         AppRoutes.setupPrint: (context) => const SetupPrintScreen(),
@@ -84,8 +82,7 @@ class MyApp extends ConsumerWidget {
         AppRoutes.returns: (context) => const ReturnScreen(),
         AppRoutes.reprint: (context) => const ReprintScreen(),
         AppRoutes.region: (context) => const RouteSelectionScreen(),
-        // Example for a future screen:
-        // AppRoutes.invoice: (context) => const InvoiceScreen(),
+
       },
       scaffoldMessengerKey: scaffoldMessengerKey,
     );
